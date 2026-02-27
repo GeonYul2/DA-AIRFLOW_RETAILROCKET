@@ -1,11 +1,6 @@
 # DA-AIRFLOW_RETAILROCKET
 Apache Airflow 기반 RetailRocket clickstream 분석 파이프라인 포트폴리오
 
-> `rr_funnel_daily` DAG로 RAW → STAGING → MART → KPI → QA → EXPORT 전 과정을 자동화해  
-> 실데이터 기준으로 재현 가능한 분석 데이터 제품(지표/세그먼트/리포트)을 생성하도록 구현했습니다.
-
----
-
 ## 0) Why I built this (Problem → Goal)
 
 ### Problem
