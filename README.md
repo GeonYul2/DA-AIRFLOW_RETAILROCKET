@@ -1,53 +1,132 @@
-# da-airflow-retailrocket
+# DA-AIRFLOW_RETAILROCKET
 
-Apache Airflow 기반 RetailRocket 데이터 파이프라인 프로젝트입니다.
-
-`rr_funnel_daily` DAG가 아래 흐름을 자동화합니다.
-
-`raw 적재 -> staging -> mart -> KPI -> quality check -> CSV export`
+Apache Airflow 기반 RetailRocket 포트폴리오 파이프라인입니다.  
+`rr_funnel_daily` DAG가 `RAW -> STAGING -> MART -> KPI -> QA -> EXPORT`를 자동화합니다.
 
 ---
 
-## 1) 주요 기능
+## 1) 원본 데이터( RAW )
 
-- `BashOperator` 기반 ETL/ELT 파이프라인
-- 일 단위 Funnel KPI 계산
-- Cohort/CRM 타겟 산출
-- 품질 검증 SQL 실행
-- 리포트 CSV/TXT export 생성
+소스 파일(`data/raw/retailrocket/`)
+
+- `events.csv`: 사용자 이벤트 로그
+  - `timestamp`, `visitorid`, `event`, `itemid`, `transactionid`
+- `category_tree.csv`: 카테고리 계층
+  - `categoryid`, `parentid`
+- `item_properties_part1.csv`, `item_properties_part2.csv`: 상품 속성 이력
+  - `timestamp`, `itemid`, `property`, `value`
 
 ---
 
-## 2) DAG 정보
+## 2) 파이프라인 도식화
+
+```mermaid
+flowchart LR
+  A[raw_rr_events / raw_rr_category_tree / raw_rr_item_properties]
+  B[stg_rr_events<br/>stg_rr_item_snapshot<br/>stg_rr_category_dim]
+  C[dim_rr_category / dim_rr_item / dim_rr_visitor]
+  D[fact_rr_events<br/>fact_rr_sessions]
+  E[mart_rr_funnel_daily<br/>mart_rr_funnel_category_daily<br/>mart_rr_cohort_weekly<br/>mart_rr_crm_targets_daily]
+  F[90_quality SQL checks]
+  G[CSV/TXT Reports]
+
+  A --> B --> C --> D --> E --> F --> G
+```
+
+---
+
+## 3) 레이어별 처리 설명
+
+### 3-1. STAGING
+
+- `stg_rr_events`
+  - `event_type` 정규화(`LOWER/TRIM`)
+  - `timestamp_ms` -> `event_ts`, `event_date` 변환
+- `stg_rr_item_snapshot`
+  - `categoryid`, `available` 속성의 최신값만 추출(`ROW_NUMBER`)
+- `stg_rr_category_dim`
+  - 재귀 CTE로 카테고리 트리/루트/깊이/경로 생성
+
+### 3-2. MART
+
+- 차원 테이블
+  - `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`
+- 사실 테이블
+  - `fact_rr_events`: 세션 ID 부여
+  - `fact_rr_sessions`: 세션 단위 집계
+
+#### 세션 분리 규칙 (핵심)
+
+`fact_rr_events` 생성 시 동일 visitor 기준으로 새 세션(`new_sess=1`) 처리:
+
+1. 이전 이벤트가 없는 첫 이벤트
+2. 날짜가 바뀐 경우
+3. 이전 이벤트와의 간격이 30분 초과인 경우
+
+세션 ID 형식: `visitor_id-session_index`
+
+### 3-3. KPI
+
+- `mart_rr_funnel_daily`: 일 단위 funnel/전환율
+- `mart_rr_funnel_category_daily`: 루트 카테고리별 funnel
+- `mart_rr_cohort_weekly`: 구매 코호트 리텐션(주차)
+- `mart_rr_crm_targets_daily`: CRM 타겟 세그먼트
+  - 당일 장바구니 이탈
+  - 최근 7일 고의도 뷰어(무카트)
+  - 반복 구매자
+
+### 3-4. QA
+
+`sql/retailrocket/90_quality/`에서 품질 검증:
+
+- 이벤트 도메인 체크
+- transaction 무결성 체크
+- null 체크
+- 핵심 테이블 row count sanity
+- KPI 값 범위 sanity (CVR 0~1 등)
+
+### 3-5. EXPORT
+
+성공 시 `logs/reports/` 산출물 생성:
+
+- `rr_funnel_daily_<target_date>.csv`
+- `rr_cohort_weekly_<target_date>.csv`
+- `rr_crm_targets_<target_date>.csv`
+- `rr_pipeline_summary_<target_date>.txt`
+
+---
+
+## 4) DAG 정보
 
 - DAG ID: `rr_funnel_daily`
-- Schedule: `0 9 * * *` (Asia/Seoul 기준 일 1회)
+- Schedule: `0 9 * * *` (Asia/Seoul)
 - `catchup=False` (대량 자동 백필 방지)
-- 수동 백필 시 `dag_run.conf.target_date` 지원 (예: `2015-09-18`)
+- `max_active_runs=1`
+- 수동 백필: `dag_run.conf.target_date` 지원
 
 ---
 
-## 3) 빠른 실행
+## 5) 실행 방법
 
-### 3-1. 컨테이너 기동
+### 5-1. 컨테이너 기동
 
 ```bash
 make up
 ```
 
-### 3-2. DDL 초기화
+### 5-2. DDL 초기화
 
 ```bash
 make init
 ```
 
-### 3-3. DAG 수동 트리거
+### 5-3. DAG 실행
 
 ```bash
 make run-dag
 ```
 
-### 3-4. 특정 날짜 백필 실행
+### 5-4. 특정 날짜 백필
 
 ```bash
 docker compose exec -T airflow-apiserver \
@@ -56,7 +135,7 @@ docker compose exec -T airflow-apiserver \
   -c '{"target_date":"2015-09-18"}'
 ```
 
-### 3-5. 실행 상태 확인
+### 5-5. 실행 상태 확인
 
 ```bash
 docker compose exec -T airflow-apiserver airflow dags list-runs rr_funnel_daily -o table
@@ -65,24 +144,11 @@ docker compose exec -T airflow-apiserver airflow tasks states-for-dag-run rr_fun
 
 ---
 
-## 4) 결과물 위치
-
-성공 시 아래 파일이 생성됩니다.
-
-- `logs/reports/rr_funnel_daily_<target_date>.csv`
-- `logs/reports/rr_cohort_weekly_<target_date>.csv`
-- `logs/reports/rr_crm_targets_<target_date>.csv`
-- `logs/reports/rr_pipeline_summary_<target_date>.txt`
-
----
-
-## 5) 저장소 업로드 가이드
+## 6) GitHub 업로드 가이드
 
 ### 커밋 권장
 
-- `dags/`
-- `scripts/`
-- `sql/`
+- `dags/`, `scripts/`, `sql/`
 - `docker-compose.yml`, `Dockerfile`, `Makefile`, `requirements.txt`
 - `README.md`, `.env.example`
 
@@ -91,4 +157,3 @@ docker compose exec -T airflow-apiserver airflow tasks states-for-dag-run rr_fun
 - `.env` 및 민감정보
 - `logs/`, `exports/`, `.omx/`
 - 대용량 원본데이터(`data/raw/`)
-
