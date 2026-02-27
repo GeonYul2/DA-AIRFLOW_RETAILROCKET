@@ -1,0 +1,21 @@
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OMX / local state
+.omx/
+
+# Runtime artifacts
+logs/
+exports/
+
+# Raw datasets (large, non-source artifacts)
+data/raw/
+
+# OS-specific
+*:Zone.Identifier
