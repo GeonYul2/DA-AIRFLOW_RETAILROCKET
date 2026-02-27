@@ -7,6 +7,28 @@
 
 ---
 
+## 한눈에 보는 파이프라인 (시각 요약)
+
+```text
+RAW(원본 로그)
+  → STAGING(정규화/타입 변환)
+  → MART(차원·사실 + 세션화)
+  → KPI(퍼널/코호트/CRM)
+  → QA(품질 게이트)
+  → EXPORT(CSV/TXT 산출물)
+```
+
+| 단계 | 한 줄 요약 | 핵심 산출 |
+|---|---|---|
+| RAW | Kaggle 원본 CSV 적재 | raw_rr_* |
+| STAGING | 이벤트/속성 표준화 | stg_rr_events, stg_rr_item_snapshot |
+| MART | 분석용 데이터 모델 구성 | dim_rr_*, fact_rr_* |
+| KPI | 비즈니스 지표 제품화 | mart_rr_funnel_daily 등 |
+| QA | 데이터 신뢰성 검증 | quality_check_runs |
+| EXPORT | 대시보드 연계 파일 생성 | funnel/cohort/crm CSV + summary TXT |
+
+---
+
 ## What this project demonstrates (포트폴리오 핵심)
 - **Event log 기반 퍼널 분석**: `view → addtocart → transaction` 전환율/병목 구간 산출
 - **Sessionization(세션 정의)**: 30분 inactivity 룰로 `session_id` 부여 및 세션 단위 KPI 생성
