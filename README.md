@@ -1,7 +1,7 @@
 # DA-AIRFLOW_RETAILROCKET
-**Apache Airflow 기반 RetailRocket clickstream 분석 파이프라인 포트폴리오**
+Apache Airflow 기반 RetailRocket clickstream 분석 파이프라인 포트폴리오
 
-> `rr_funnel_daily` DAG로 **RAW → STAGING → MART → KPI → QA → EXPORT** 전 과정을 자동화해  
+> `rr_funnel_daily` DAG로 RAW → STAGING → MART → KPI → QA → EXPORT 전 과정을 자동화해  
 > 실데이터 기준으로 재현 가능한 분석 데이터 제품(지표/세그먼트/리포트)을 생성하도록 구현했습니다.
 
 ---
@@ -9,22 +9,22 @@
 ## 0) Why I built this (Problem → Goal)
 
 ### Problem
-데이터 분석 실무에서는 “분석을 잘하는 것”만큼 **데이터가 믿을 수 있는 형태로 지속 공급되는가**가 중요합니다.
+데이터 분석 실무에서는 “분석을 잘하는 것”만큼 데이터가 믿을 수 있는 형태로 지속 공급되는가가 중요합니다.
 
-- **원본 로그 비정형성**  
+- 원본 로그 비정형성  
   ms epoch 타임스탬프, 문자열 이벤트, 시간 의존 속성(property) 때문에 분석마다 변환 로직이 중복되고 결과가 흔들립니다.
-- **지표 정의 불일치**  
+- 지표 정의 불일치  
   전환율(이벤트/세션 기준), 코호트(첫 방문/첫 구매 기준) 정의가 불명확하면 팀 내 숫자 해석이 달라집니다.
-- **배치 성공과 데이터 신뢰성의 불일치**  
+- 배치 성공과 데이터 신뢰성의 불일치  
   도메인 오류/무결성 깨짐/결측·중복이 있어도 배치는 성공할 수 있고, KPI는 조용히 왜곡될 수 있습니다.
 
 ### Goal
-이 프로젝트의 목표는 **“분석가가 운영형 데이터 흐름까지 책임질 수 있음을 증명”**하는 것입니다.
+이 프로젝트의 목표는 “분석가가 운영형 데이터 흐름까지 책임질 수 있음을 증명”하는 것입니다.
 
-- 실데이터를 **RAW/STAGING/MART** 계층으로 모델링하고
-- 퍼널/코호트/CRM 타겟을 **KPI 레이어**로 제품화하며
-- 도메인/널/무결성/범위 검증을 **QA 게이트**로 자동화하고
-- 최종 결과를 **CSV/TXT 산출물**로 전달 가능한 형태로 마무리했습니다.
+- 실데이터를 RAW/STAGING/MART 계층으로 모델링하고
+- 퍼널/코호트/CRM 타겟을 KPI 레이어로 제품화하며
+- 도메인/널/무결성/범위 검증을 QA 게이트로 자동화하고
+- 최종 결과를 CSV/TXT 산출물로 전달 가능한 형태로 마무리했습니다.
 
 ---
 
@@ -52,7 +52,7 @@
 - 출처: Kaggle RetailRocket eCommerce Dataset  
   https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset
 - 로컬 경로: `data/raw/retailrocket/`
-- 이벤트 기간: **2015-05-03 ~ 2015-09-18 (KST)**
+- 이벤트 기간: 2015-05-03 ~ 2015-09-18 (KST)
 
 원본 파일:
 - `events.csv` — `timestamp, visitorid, event, itemid, transactionid`
@@ -67,7 +67,7 @@
 
 ### 해석 시 유의점
 - 데이터는 익명화/해시 처리되어 있으며 `categoryid`, `available`를 제외한 속성값 대부분은 해시입니다.
-- 따라서 본 프로젝트는 상품 텍스트 의미 해석보다 **행동 로그 구조(세션/퍼널/전환)** 분석에 초점을 둡니다.
+- 따라서 본 프로젝트는 상품 텍스트 의미 해석보다 행동 로그 구조(세션/퍼널/전환) 분석에 초점을 둡니다.
 
 ---
 
@@ -85,20 +85,20 @@
 STAGING이 “정제된 원본”이라면 MART는 “의사결정용 모델”입니다.  
 반복 조인·집계 비용을 줄이기 위해 dim/fact 구조로 분리했습니다.
 
-**Dimensions**
+#### Dimensions
 - `dim_rr_category`
 - `dim_rr_item`
 - `dim_rr_visitor`
 
-**Facts**
+#### Facts
 - `fact_rr_events`: 이벤트에 `session_id` 부여
 - `fact_rr_sessions`: 세션 단위 집계 (`views/carts/purchases + flags`)
 
-**Sessionization Rule (핵심)**
+#### Sessionization Rule (핵심)
 동일 `visitor_id` 기준으로 새 세션 시작:
 1. 첫 이벤트
 2. 날짜 변경
-3. 이전 이벤트 대비 **30분 초과 inactivity**
+3. 이전 이벤트 대비 30분 초과 inactivity
 
 세션 ID: `visitor_id-session_index`
 
@@ -159,11 +159,10 @@ STAGING이 “정제된 원본”이라면 MART는 “의사결정용 모델”�
 
 ## 7) Troubleshooting (핵심 1건)
 
-**문제**  
+### 문제
 Airflow 3 환경에서 Jinja 템플릿 `in_timezone` 호출 시 타입 불일치 오류 발생
 
-**해결**
+### 해결
 - datetime 호환 템플릿으로 수정
 - `dag_run.conf.target_date` 우선 처리로 수동 백필 안정화
 - `catchup=False` 적용으로 불필요한 대량 자동 백필 방지
-
