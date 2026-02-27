@@ -1,0 +1,74 @@
+<svg width="1600" height="620" viewBox="0 0 1600 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font: 700 28px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #0f172a; }
+      .label { font: 700 24px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 500 15px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #334155; }
+      .note { font: 500 14px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #475569; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="620" fill="#f8fafc"/>
+  <text x="800" y="58" text-anchor="middle" class="title">Airflow RetailRocket Pipeline Architecture (RAW → EXPORT)</text>
+
+  <!-- Boxes -->
+  <g>
+    <rect x="60" y="180" rx="14" ry="14" width="220" height="150" fill="#dbeafe" stroke="#334155" stroke-width="2.5"/>
+    <text x="170" y="228" text-anchor="middle" class="label">RAW</text>
+    <text x="170" y="255" text-anchor="middle" class="sub">events/category</text>
+    <text x="170" y="276" text-anchor="middle" class="sub">item properties</text>
+  </g>
+
+  <g>
+    <rect x="315" y="180" rx="14" ry="14" width="220" height="150" fill="#dcfce7" stroke="#334155" stroke-width="2.5"/>
+    <text x="425" y="228" text-anchor="middle" class="label">STAGING</text>
+    <text x="425" y="255" text-anchor="middle" class="sub">normalize &amp; cast</text>
+    <text x="425" y="276" text-anchor="middle" class="sub">snapshot/category tree</text>
+  </g>
+
+  <g>
+    <rect x="570" y="180" rx="14" ry="14" width="220" height="150" fill="#fef3c7" stroke="#334155" stroke-width="2.5"/>
+    <text x="680" y="228" text-anchor="middle" class="label">MART</text>
+    <text x="680" y="255" text-anchor="middle" class="sub">dim/fact modeling</text>
+    <text x="680" y="276" text-anchor="middle" class="sub">sessionization</text>
+  </g>
+
+  <g>
+    <rect x="825" y="180" rx="14" ry="14" width="220" height="150" fill="#fee2e2" stroke="#334155" stroke-width="2.5"/>
+    <text x="935" y="228" text-anchor="middle" class="label">KPI</text>
+    <text x="935" y="255" text-anchor="middle" class="sub">funnel/cohort</text>
+    <text x="935" y="276" text-anchor="middle" class="sub">CRM targets</text>
+  </g>
+
+  <g>
+    <rect x="1080" y="180" rx="14" ry="14" width="220" height="150" fill="#e9d5ff" stroke="#334155" stroke-width="2.5"/>
+    <text x="1190" y="228" text-anchor="middle" class="label">QA</text>
+    <text x="1190" y="255" text-anchor="middle" class="sub">domain/null/integrity</text>
+    <text x="1190" y="276" text-anchor="middle" class="sub">sanity checks</text>
+  </g>
+
+  <g>
+    <rect x="1335" y="180" rx="14" ry="14" width="220" height="150" fill="#ccfbf1" stroke="#334155" stroke-width="2.5"/>
+    <text x="1445" y="228" text-anchor="middle" class="label">EXPORT</text>
+    <text x="1445" y="255" text-anchor="middle" class="sub">CSV reports</text>
+    <text x="1445" y="276" text-anchor="middle" class="sub">pipeline summary</text>
+  </g>
+
+  <!-- Arrows -->
+  <line x1="280" y1="255" x2="315" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="535" y1="255" x2="570" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="790" y1="255" x2="825" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="1045" y1="255" x2="1080" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="1300" y1="255" x2="1335" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <text x="800" y="418" text-anchor="middle" class="note">
+    Session Rule: first event OR date change OR inactivity &gt; 30 minutes
+  </text>
+  <text x="800" y="446" text-anchor="middle" class="note">
+    Outputs: rr_funnel_daily.csv / rr_cohort_weekly.csv / rr_crm_targets.csv / rr_pipeline_summary.txt
+  </text>
+</svg>
+

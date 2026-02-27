@@ -68,8 +68,8 @@
 ---
 
 ## Pipeline Architecture
-### Diagram (PNG)
-![Pipeline Architecture](docs/assets/pipeline_architecture.png)
+### Diagram (SVG)
+![Pipeline Architecture](docs/assets/pipeline_architecture.svg)
 
 ### Layered Design
 - **RAW**: 원본 CSV → DB 적재(재실행 가능한 TRUNCATE+LOAD)
