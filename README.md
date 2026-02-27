@@ -1,187 +1,110 @@
 # DA-AIRFLOW_RETAILROCKET
+**Apache Airflow 기반 RetailRocket clickstream 데이터 파이프라인 포트폴리오**  
+`rr_funnel_daily` DAG가 **RAW → STAGING → MART → KPI → QA → EXPORT**를 일 배치로 자동화합니다.
 
-Apache Airflow 기반 RetailRocket 포트폴리오 파이프라인입니다.  
-`rr_funnel_daily` DAG가 `RAW -> STAGING -> MART -> KPI -> QA -> EXPORT`를 자동화합니다.
-
----
-
-## 1) 원본 데이터( RAW )
-
-소스 파일(`data/raw/retailrocket/`)
-
-- `events.csv`: 사용자 이벤트 로그
-  - `timestamp`, `visitorid`, `event`, `itemid`, `transactionid`
-- `category_tree.csv`: 카테고리 계층
-  - `categoryid`, `parentid`
-- `item_properties_part1.csv`, `item_properties_part2.csv`: 상품 속성 이력
-  - `timestamp`, `itemid`, `property`, `value`
+> 목표: “실데이터 기반”으로 **퍼널/코호트/CRM 타겟 산출**까지 연결되는 **운영형 분석 파이프라인**을 구현하고,  
+> 지표 정의/데이터 모델/품질 게이트/산출물 전달까지 **End-to-End 재현 가능한 형태**로 제시합니다.
 
 ---
 
-## 2) 파이프라인 도식화
-
-```mermaid
-flowchart LR
-  A[raw_rr_events / raw_rr_category_tree / raw_rr_item_properties]
-  B[stg_rr_events<br/>stg_rr_item_snapshot<br/>stg_rr_category_dim]
-  C[dim_rr_category / dim_rr_item / dim_rr_visitor]
-  D[fact_rr_events<br/>fact_rr_sessions]
-  E[mart_rr_funnel_daily<br/>mart_rr_funnel_category_daily<br/>mart_rr_cohort_weekly<br/>mart_rr_crm_targets_daily]
-  F[90_quality SQL checks]
-  G[CSV/TXT Reports]
-
-  A --> B --> C --> D --> E --> F --> G
-```
+## What this project demonstrates (포트폴리오 핵심)
+- **Event log 기반 퍼널 분석**: `view → addtocart → transaction` 전환율/병목 구간 산출
+- **Sessionization(세션 정의)**: 30분 inactivity 룰로 `session_id` 부여 및 세션 단위 KPI 생성
+- **Analytics-ready Mart 설계**: `dim/fact` 구조로 반복 분석 비용 최소화
+- **Data Quality Gate 내장**: 도메인/널/무결성/지표 범위 sanity check 자동화
+- **Deliverable 중심 산출물**: BI 도구(Tableau Public 등) 업로드 가능한 CSV + 요약 리포트(TXT) 자동 생성
 
 ---
 
-## 3) 레이어별 처리 설명
+## Tech Stack
+- **Orchestration**: Apache Airflow (Docker Compose)
+- **Warehouse**: PostgreSQL
+- **Transform**: SQL (staging/mart/kpi), Python (loader/export)
+- **Runtime**: Windows + WSL(개발) / Docker 기반 재현
 
-### 3-1. STAGING
+---
 
-**왜 이 레이어가 필요한가? (목적)**
+## Dataset (RAW)
+원본 파일 경로: `data/raw/retailrocket/` *(원본 데이터는 커밋하지 않습니다)*
 
-- 원본 로그(`events.csv`)는 분석/집계에 바로 쓰기 어려운 형태(문자열/정규화 안됨/타임스탬프 ms)라서,
-  **분석 친화적인 정형 구조로 재설계**하기 위해 STAGING을 둡니다.
-- 원본의 “의미”는 최대한 보존하면서, 이후 MART/KPI에서 공통으로 재사용 가능한 중간 표준 레이어를 만듭니다.
+- `events.csv` — 사용자 이벤트 로그  
+  `timestamp, visitorid, event, itemid, transactionid`
+- `category_tree.csv` — 카테고리 계층(트리)  
+  `categoryid, parentid`
+- `item_properties_part1.csv`, `item_properties_part2.csv` — 상품 속성 이력(시간 의존)  
+  `timestamp, itemid, property, value`
 
-**설계 기준**
+> Note) 본 데이터는 익명화/ID 기반으로 제공되며, 카테고리/상품 속성은 숫자/코드 형태입니다.  
+> 본 프로젝트는 “이름 해석”이 아니라 “구조(트리/세션/퍼널)와 성과 차이”를 분석 대상으로 삼습니다.
 
-- 원본 손상 없이 타입/포맷 표준화
-- 변환 로직을 STAGING에 집중해 하위 레이어 단순화
-- 중복 계산 제거(한 번 변환 후 다수 단계에서 재사용)
+---
 
-**핵심 키워드**
+## Pipeline Architecture
+### Layered Design
+- **RAW**: 원본 CSV → DB 적재(재실행 가능한 TRUNCATE+LOAD)
+- **STAGING**: 타입/포맷 표준화(분석-friendly), 이벤트 canonicalization
+- **MART**: 의사결정용 데이터 모델(dim/fact), 세션화 포함
+- **KPI**: 퍼널/코호트/CRM 타겟을 즉시 사용 가능한 지표 레이어로 제품화
+- **QA**: 배치 성공과 별개로 “데이터 품질”을 보장하는 게이트
+- **EXPORT**: CSV/TXT 산출물 생성(대시보드/보고서/검증 용이)
 
-- `schema-on-write`
-- `type normalization`
-- `event canonicalization`
-- `late-binding for analytics`
+### Why STAGING?
+원본 로그는 그대로 분석에 쓰기 어렵습니다(ms epoch, 문자열, 반복 변환 필요).  
+STAGING에서 **타입/정규화 변환을 1회 수행**하여, MART/KPI에서 재사용 가능한 표준 레이어를 제공합니다.
 
+---
+
+## Key Transform Details
+### STAGING
 - `stg_rr_events`
   - `event_type` 정규화(`LOWER/TRIM`)
-  - `timestamp_ms` -> `event_ts`, `event_date` 변환
+  - `timestamp_ms → event_ts, event_date` 변환
 - `stg_rr_item_snapshot`
-  - `categoryid`, `available` 속성의 최신값만 추출(`ROW_NUMBER`)
+  - `property in (categoryid, available)` 중 **최신값 스냅샷** 추출(`ROW_NUMBER`)
 - `stg_rr_category_dim`
-  - 재귀 CTE로 카테고리 트리/루트/깊이/경로 생성
+  - 재귀 CTE로 카테고리 트리의 **루트/깊이/경로(path)** 생성
 
-### 3-2. MART
+### MART
+- **Dimensions**: `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`
+- **Facts**:
+  - `fact_rr_events`: 이벤트에 `session_id` 부여
+  - `fact_rr_sessions`: 세션 단위 집계(views/carts/purchases + flags)
 
-**왜 이 레이어가 필요한가? (목적)**
+#### Sessionization Rule (핵심)
+동일 `visitor_id` 기준으로 새 세션 시작 조건:
+- 첫 이벤트
+- 날짜 변경
+- 이전 이벤트 대비 **30분 초과 inactivity**
 
-- STAGING은 “정제된 원본”에 가깝고, MART는 “의사결정용 데이터 모델”입니다.
-- 대시보드/분석에서 반복되는 조인·집계 비용을 줄이기 위해
-  **차원/사실(Star Schema 성격) 기반으로 재구성**합니다.
+세션 ID: `visitor_id-session_index`
 
-**설계 기준**
-
-- 차원(`dim_*`)과 사실(`fact_*`)을 분리해 해석성과 성능 확보
-- 세션 단위 행동 분석 가능하도록 이벤트에 `session_id` 부여
-- KPI 계산에 필요한 최소·명확한 엔터티로 분해
-
-**핵심 키워드**
-
-- `dimensional modeling`
-- `star schema`
-- `sessionization`
-- `analytics-ready mart`
-
-- 차원 테이블
-  - `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`
-- 사실 테이블
-  - `fact_rr_events`: 세션 ID 부여
-  - `fact_rr_sessions`: 세션 단위 집계
-
-#### 세션 분리 규칙 (핵심)
-
-`fact_rr_events` 생성 시 동일 visitor 기준으로 새 세션(`new_sess=1`) 처리:
-
-1. 이전 이벤트가 없는 첫 이벤트
-2. 날짜가 바뀐 경우
-3. 이전 이벤트와의 간격이 30분 초과인 경우
-
-세션 ID 형식: `visitor_id-session_index`
-
-### 3-3. KPI
-
-**왜 이 레이어가 필요한가? (목적)**
-
-- MART는 범용 분석용이고, KPI는 비즈니스 의사결정용 지표를
-  **즉시 사용 가능한 형태로 제품화**한 레이어입니다.
-- 퍼널, 코호트, CRM 타겟을 분리해 목적별 소비(대시보드/캠페인/리포팅)를 명확히 합니다.
-
-**설계 기준**
-
-- 일자 기준 반복 계산 가능(재실행/백필 친화)
-- 지표 정의를 SQL로 명시해 재현성과 검증성 확보
-- 운영 활용 시나리오(마케팅 타겟팅)까지 연결
-
-**핵심 키워드**
-
-- `metric layer`
-- `funnel analytics`
-- `cohort retention`
-- `CRM targeting`
-
+### KPI
 - `mart_rr_funnel_daily`: 일 단위 funnel/전환율
 - `mart_rr_funnel_category_daily`: 루트 카테고리별 funnel
 - `mart_rr_cohort_weekly`: 구매 코호트 리텐션(주차)
 - `mart_rr_crm_targets_daily`: CRM 타겟 세그먼트
   - 당일 장바구니 이탈
-  - 최근 7일 고의도 뷰어(무카트)
+  - 최근 7일 고의도 뷰어(무카트/무구매)
   - 반복 구매자
 
-### 3-4. QA
+---
 
-**왜 이 레이어가 필요한가? (목적)**
+## Data Quality (QA Gate)
+ETL의 “성공”과 “신뢰 가능한 데이터”는 다릅니다. 배치 종료 후 품질 검증을 통해 지표 왜곡을 방지합니다.
 
-- ETL은 “실행 성공”과 “데이터 품질 보장”이 다르기 때문에,
-  배치 완료 후 반드시 품질 게이트를 둬야 합니다.
-- 지표 왜곡을 유발하는 도메인/널/무결성 이상을 조기 탐지합니다.
-
-**설계 기준**
-
-- SQL 기반 자동 검증(파이프라인에 내장)
-- 실패 시 즉시 탐지 가능한 명시적 체크 항목
-- 비즈니스 지표 범위(예: CVR 0~1) 검증 포함
-
-**핵심 키워드**
-
-- `data quality gate`
-- `assertion query`
-- `sanity check`
-- `data reliability`
-
-`sql/retailrocket/90_quality/`에서 품질 검증:
-
-- 이벤트 도메인 체크
-- transaction 무결성 체크
-- null 체크
+`sql/retailrocket/90_quality/` 예시:
+- 이벤트 도메인 체크(event ∈ view/addtocart/transaction)
+- transaction 무결성(transaction인데 transactionid NULL이면 실패)
+- null 체크(핵심 키)
 - 핵심 테이블 row count sanity
-- KPI 값 범위 sanity (CVR 0~1 등)
+- KPI 범위 sanity(CVR 0~1)
 
-### 3-5. EXPORT
+> QA 결과는 `quality_check_runs`에 기록되어 **운영 추적성**을 제공합니다.
 
-**왜 이 레이어가 필요한가? (목적)**
+---
 
-- 최종 사용자/포트폴리오 검증 관점에서는 DB 내부 테이블보다
-  **즉시 전달 가능한 산출물(CSV/TXT)** 이 중요합니다.
-- 분석 결과를 외부 도구(스프레드시트, BI, 문서)와 쉽게 연동합니다.
-
-**설계 기준**
-
-- 날짜별 파일명으로 재현성/추적성 확보
-- 요약 리포트(txt)와 상세 지표(csv) 병행 제공
-
-**핵심 키워드**
-
-- `data product`
-- `delivery artifact`
-- `reproducible output`
-
-성공 시 `logs/reports/` 산출물 생성:
-
+## Export Artifacts
+성공 시 `logs/reports/`에 아래 산출물이 생성됩니다:
 - `rr_funnel_daily_<target_date>.csv`
 - `rr_cohort_weekly_<target_date>.csv`
 - `rr_crm_targets_<target_date>.csv`
@@ -189,38 +112,32 @@ flowchart LR
 
 ---
 
-## 4) DAG 정보
-
-- DAG ID: `rr_funnel_daily`
-- Schedule: `0 9 * * *` (Asia/Seoul)
-- `catchup=False` (대량 자동 백필 방지)
-- `max_active_runs=1`
-- 수동 백필: `dag_run.conf.target_date` 지원
+## DAG
+- **DAG ID**: `rr_funnel_daily`
+- **Schedule**: 매일 09:00 (Asia/Seoul)
+- **catchup**: `False` *(대량 자동 백필 방지)*
+- **max_active_runs**: 1
+- **manual backfill**: `dag_run.conf.target_date` 지원
 
 ---
 
-## 5) 실행 방법
-
-### 5-1. 컨테이너 기동
-
+## How to Run (Reproducible)
+### 1) 컨테이너 기동
 ```bash
 make up
 ```
 
-### 5-2. DDL 초기화
-
+### 2) DDL 초기화
 ```bash
 make init
 ```
 
-### 5-3. DAG 실행
-
+### 3) DAG 실행
 ```bash
 make run-dag
 ```
 
-### 5-4. 특정 날짜 백필
-
+### 4) 특정 날짜 백필(수동 실행)
 ```bash
 docker compose exec -T airflow-apiserver \
   airflow dags trigger rr_funnel_daily \
@@ -228,8 +145,7 @@ docker compose exec -T airflow-apiserver \
   -c '{"target_date":"2015-09-18"}'
 ```
 
-### 5-5. 실행 상태 확인
-
+### 5) 실행 상태 확인
 ```bash
 docker compose exec -T airflow-apiserver airflow dags list-runs rr_funnel_daily -o table
 docker compose exec -T airflow-apiserver airflow tasks states-for-dag-run rr_funnel_daily <run_id>
@@ -237,16 +153,24 @@ docker compose exec -T airflow-apiserver airflow tasks states-for-dag-run rr_fun
 
 ---
 
-## 6) GitHub 업로드 가이드
-
-### 커밋 권장
+## Repo Policy (GitHub 업로드 가이드)
+### Commit 권장
 
 - `dags/`, `scripts/`, `sql/`
 - `docker-compose.yml`, `Dockerfile`, `Makefile`, `requirements.txt`
 - `README.md`, `.env.example`
 
-### 커밋 제외
+### Commit 제외
 
 - `.env` 및 민감정보
 - `logs/`, `exports/`, `.omx/`
-- 대용량 원본데이터(`data/raw/`)
+- 대용량 원본 데이터 `data/raw/`
+
+---
+
+## Resume-ready bullets (이력서 문장 예시)
+
+- RetailRocket clickstream 데이터를 활용해 Airflow 기반 일배치 파이프라인(RAW→STAGING→MART→KPI→QA→EXPORT) 구축 및 재현 가능한 실행 환경(Docker Compose) 제공
+- 30분 inactivity 규칙으로 세션화(sessionization) 구현 후 세션 단위 퍼널 전환율/코호트 리텐션/CRM 타겟 세그먼트 산출
+- **SQL 기반 데이터 품질 게이트(QA)**를 파이프라인에 내장하고, 검증 결과를 quality_check_runs로 기록하여 운영 추적성 확보
+- Tableau Public 업로드 가능한 CSV 및 요약 리포트(TXT) 자동 생성으로 **분석 산출물 전달(Delivery artifact)**까지 연결
