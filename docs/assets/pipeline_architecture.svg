@@ -1,73 +1,81 @@
-<svg width="1600" height="620" viewBox="0 0 1600 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1800" height="760" viewBox="0 0 1800 760" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style>
-      .title { font: 700 28px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #0f172a; }
-      .label { font: 700 24px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #0f172a; }
-      .sub { font: 500 15px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #334155; }
-      .note { font: 500 14px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #475569; }
+      .title { font: 700 36px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #0f172a; }
+      .label { font: 700 32px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 550 20px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #334155; }
+      .noteHead { font: 700 28px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #0f172a; }
+      .noteLine { font: 500 20px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #334155; }
+      .footer { font: 500 18px "Inter", "Pretendard", "Noto Sans KR", Arial, sans-serif; fill: #475569; }
     </style>
-    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M0,0 L12,6 L0,12 z" fill="#64748b"/>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 z" fill="#64748b"/>
     </marker>
   </defs>
 
-  <rect x="0" y="0" width="1600" height="620" fill="#f8fafc"/>
-  <text x="800" y="58" text-anchor="middle" class="title">Airflow RetailRocket Pipeline Architecture (RAW → EXPORT)</text>
+  <rect x="0" y="0" width="1800" height="760" fill="#f8fafc"/>
+  <text x="900" y="62" text-anchor="middle" class="title">Airflow RetailRocket Pipeline Architecture (RAW → EXPORT)</text>
 
-  <!-- Boxes -->
+  <!-- Layer boxes -->
   <g>
-    <rect x="60" y="180" rx="14" ry="14" width="220" height="150" fill="#dbeafe" stroke="#334155" stroke-width="2.5"/>
-    <text x="170" y="228" text-anchor="middle" class="label">RAW</text>
-    <text x="170" y="255" text-anchor="middle" class="sub">events/category</text>
-    <text x="170" y="276" text-anchor="middle" class="sub">item properties</text>
+    <rect x="40" y="140" rx="16" ry="16" width="240" height="180" fill="#dbeafe" stroke="#334155" stroke-width="2.5"/>
+    <text x="160" y="200" text-anchor="middle" class="label">RAW</text>
+    <text x="160" y="236" text-anchor="middle" class="sub">events/category</text>
+    <text x="160" y="265" text-anchor="middle" class="sub">item properties</text>
   </g>
 
   <g>
-    <rect x="315" y="180" rx="14" ry="14" width="220" height="150" fill="#dcfce7" stroke="#334155" stroke-width="2.5"/>
-    <text x="425" y="228" text-anchor="middle" class="label">STAGING</text>
-    <text x="425" y="255" text-anchor="middle" class="sub">normalize &amp; cast</text>
-    <text x="425" y="276" text-anchor="middle" class="sub">snapshot/category tree</text>
+    <rect x="330" y="140" rx="16" ry="16" width="240" height="180" fill="#dcfce7" stroke="#334155" stroke-width="2.5"/>
+    <text x="450" y="200" text-anchor="middle" class="label">STAGING</text>
+    <text x="450" y="236" text-anchor="middle" class="sub">normalize &amp; cast</text>
+    <text x="450" y="265" text-anchor="middle" class="sub">snapshot/category tree</text>
   </g>
 
   <g>
-    <rect x="570" y="180" rx="14" ry="14" width="220" height="150" fill="#fef3c7" stroke="#334155" stroke-width="2.5"/>
-    <text x="680" y="228" text-anchor="middle" class="label">MART</text>
-    <text x="680" y="255" text-anchor="middle" class="sub">dim/fact modeling</text>
-    <text x="680" y="276" text-anchor="middle" class="sub">sessionization</text>
+    <rect x="620" y="140" rx="16" ry="16" width="240" height="180" fill="#fef3c7" stroke="#334155" stroke-width="2.5"/>
+    <text x="740" y="200" text-anchor="middle" class="label">MART</text>
+    <text x="740" y="236" text-anchor="middle" class="sub">dim/fact modeling</text>
+    <text x="740" y="265" text-anchor="middle" class="sub">sessionization</text>
   </g>
 
   <g>
-    <rect x="825" y="180" rx="14" ry="14" width="220" height="150" fill="#fee2e2" stroke="#334155" stroke-width="2.5"/>
-    <text x="935" y="228" text-anchor="middle" class="label">KPI</text>
-    <text x="935" y="255" text-anchor="middle" class="sub">funnel/cohort</text>
-    <text x="935" y="276" text-anchor="middle" class="sub">CRM targets</text>
+    <rect x="910" y="140" rx="16" ry="16" width="240" height="180" fill="#fee2e2" stroke="#334155" stroke-width="2.5"/>
+    <text x="1030" y="200" text-anchor="middle" class="label">KPI</text>
+    <text x="1030" y="236" text-anchor="middle" class="sub">funnel/cohort</text>
+    <text x="1030" y="265" text-anchor="middle" class="sub">CRM targets</text>
   </g>
 
   <g>
-    <rect x="1080" y="180" rx="14" ry="14" width="220" height="150" fill="#e9d5ff" stroke="#334155" stroke-width="2.5"/>
-    <text x="1190" y="228" text-anchor="middle" class="label">QA</text>
-    <text x="1190" y="255" text-anchor="middle" class="sub">domain/null/integrity</text>
-    <text x="1190" y="276" text-anchor="middle" class="sub">sanity checks</text>
+    <rect x="1200" y="140" rx="16" ry="16" width="240" height="180" fill="#e9d5ff" stroke="#334155" stroke-width="2.5"/>
+    <text x="1320" y="200" text-anchor="middle" class="label">QA</text>
+    <text x="1320" y="236" text-anchor="middle" class="sub">domain/null/integrity</text>
+    <text x="1320" y="265" text-anchor="middle" class="sub">sanity checks</text>
   </g>
 
   <g>
-    <rect x="1335" y="180" rx="14" ry="14" width="220" height="150" fill="#ccfbf1" stroke="#334155" stroke-width="2.5"/>
-    <text x="1445" y="228" text-anchor="middle" class="label">EXPORT</text>
-    <text x="1445" y="255" text-anchor="middle" class="sub">CSV reports</text>
-    <text x="1445" y="276" text-anchor="middle" class="sub">pipeline summary</text>
+    <rect x="1490" y="140" rx="16" ry="16" width="240" height="180" fill="#ccfbf1" stroke="#334155" stroke-width="2.5"/>
+    <text x="1610" y="200" text-anchor="middle" class="label">EXPORT</text>
+    <text x="1610" y="236" text-anchor="middle" class="sub">CSV reports</text>
+    <text x="1610" y="265" text-anchor="middle" class="sub">pipeline summary</text>
   </g>
 
   <!-- Arrows -->
-  <line x1="280" y1="255" x2="315" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
-  <line x1="535" y1="255" x2="570" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
-  <line x1="790" y1="255" x2="825" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
-  <line x1="1045" y1="255" x2="1080" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
-  <line x1="1300" y1="255" x2="1335" y2="255" stroke="#64748b" stroke-width="4" marker-end="url(#arrow)"/>
+  <line x1="280" y1="230" x2="330" y2="230" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="570" y1="230" x2="620" y2="230" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="860" y1="230" x2="910" y2="230" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="1150" y1="230" x2="1200" y2="230" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="1440" y1="230" x2="1490" y2="230" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
 
-  <text x="800" y="418" text-anchor="middle" class="note">
-    Session Rule: first event OR date change OR inactivity &gt; 30 minutes
-  </text>
-  <text x="800" y="446" text-anchor="middle" class="note">
+  <!-- MART detail panel -->
+  <rect x="120" y="380" rx="18" ry="18" width="1560" height="280" fill="#ffffff" stroke="#cbd5e1" stroke-width="2.5"/>
+  <text x="160" y="430" class="noteHead">MART Detail</text>
+
+  <text x="160" y="470" class="noteLine">• Dimensions: dim_rr_category, dim_rr_item, dim_rr_visitor</text>
+  <text x="160" y="505" class="noteLine">• Facts: fact_rr_events (session_id 부여), fact_rr_sessions (views/carts/purchases + flags)</text>
+  <text x="160" y="540" class="noteLine">• Sessionization Rule: 첫 이벤트 OR 날짜 변경 OR 이전 이벤트 대비 30분 초과 inactivity</text>
+  <text x="160" y="575" class="noteLine">• Session ID: visitor_id-session_index</text>
+
+  <text x="900" y="714" text-anchor="middle" class="footer">
     Outputs: rr_funnel_daily.csv / rr_cohort_weekly.csv / rr_crm_targets.csv / rr_pipeline_summary.txt
   </text>
 </svg>

@@ -96,18 +96,23 @@ STAGING에서 **타입/정규화 변환을 1회 수행**하여, MART/KPI에서 �
   - 재귀 CTE로 카테고리 트리의 **루트/깊이/경로(path)** 생성
 
 ### MART
-- **Dimensions**: `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`
-- **Facts**:
-  - `fact_rr_events`: 이벤트에 `session_id` 부여
-  - `fact_rr_sessions`: 세션 단위 집계(views/carts/purchases + flags)
+#### 1) Dimensions
+- `dim_rr_category`
+- `dim_rr_item`
+- `dim_rr_visitor`
 
-#### Sessionization Rule (핵심)
-동일 `visitor_id` 기준으로 새 세션 시작 조건:
-- 첫 이벤트
-- 날짜 변경
-- 이전 이벤트 대비 **30분 초과 inactivity**
+#### 2) Facts
+- `fact_rr_events`: 이벤트에 `session_id` 부여
+- `fact_rr_sessions`: 세션 단위 집계 (`views/carts/purchases + flags`)
 
-세션 ID: `visitor_id-session_index`
+#### 3) Sessionization Rule (핵심)
+동일 `visitor_id` 기준으로 **새 세션 시작 조건**:
+
+1. 첫 이벤트
+2. 날짜 변경
+3. 이전 이벤트 대비 **30분 초과 inactivity**
+
+**세션 ID 포맷**: `visitor_id-session_index`
 
 ### KPI
 - `mart_rr_funnel_daily`: 일 단위 funnel/전환율
