@@ -46,6 +46,25 @@
 - `item_properties_part1.csv`: 10,999,999 rows
 - `item_properties_part2.csv`: 9,275,903 rows
 
+### Dataset 메타 정보 (출처 설명 기반)
+- 관측 기간: 약 **4.5개월**
+- 이벤트 분포:
+  - `view`: 2,664,312
+  - `addtocart`: 69,332
+  - `transaction`: 22,457
+- 고유 방문자 수: **1,407,580**
+- item property 로그:
+  - 총 20,275,902 rows (part1+part2)
+  - 약 417,053 unique items
+  - 속성은 시계열 변경 로그 형태(변경 없는 값은 중복 스냅샷 병합)
+
+### 데이터 해석 주의사항
+- 원본 값은 익명화/해시 처리되어 있으며,
+  `categoryid`, `available`를 제외한 대부분의 property value는 해시값입니다.
+- 따라서 본 프로젝트는 “상품명/텍스트 의미 해석”보다
+  **행동 로그 구조(세션/퍼널/전환)와 지표 계산 체계**에 초점을 둡니다.
+- 라이선스: **CC BY-NC-SA 4.0** (비상업적 활용 기준)
+
 ---
 
 ## Pipeline Architecture
