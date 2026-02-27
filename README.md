@@ -27,6 +27,9 @@
 ## Dataset (RAW)
 원본 파일 경로: `data/raw/retailrocket/` *(원본 데이터는 커밋하지 않습니다)*
 
+- Kaggle: https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset
+- 데이터 기간(이벤트 기준): **2015-05-03 ~ 2015-09-18 (KST)**
+
 - `events.csv` — 사용자 이벤트 로그  
   `timestamp, visitorid, event, itemid, transactionid`
 - `category_tree.csv` — 카테고리 계층(트리)  
@@ -37,9 +40,18 @@
 > Note) 본 데이터는 익명화/ID 기반으로 제공되며, 카테고리/상품 속성은 숫자/코드 형태입니다.  
 > 본 프로젝트는 “이름 해석”이 아니라 “구조(트리/세션/퍼널)와 성과 차이”를 분석 대상으로 삼습니다.
 
+### Raw 규모(로컬 기준)
+- `events.csv`: 2,756,101 rows (header 제외)
+- `category_tree.csv`: 1,669 rows
+- `item_properties_part1.csv`: 10,999,999 rows
+- `item_properties_part2.csv`: 9,275,903 rows
+
 ---
 
 ## Pipeline Architecture
+### Diagram (PNG)
+![Pipeline Architecture](docs/assets/pipeline_architecture.png)
+
 ### Layered Design
 - **RAW**: 원본 CSV → DB 적재(재실행 가능한 TRUNCATE+LOAD)
 - **STAGING**: 타입/포맷 표준화(분석-friendly), 이벤트 canonicalization
