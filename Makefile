@@ -1,4 +1,4 @@
-.PHONY: up down init run-dag psql check logs run-linux
+.PHONY: up down init run-dag psql check logs run-linux fmt lint
 
 up:
 	test -f .env || cp .env.example .env
@@ -24,3 +24,9 @@ logs:
 
 run-linux:
 	docker compose exec airflow-apiserver bash -lc "cd /opt/airflow/project && bash ./scripts/run_pipeline_linux_rr.sh"
+
+fmt:
+	python3 -m black dags scripts
+
+lint:
+	python3 -m ruff check dags scripts
