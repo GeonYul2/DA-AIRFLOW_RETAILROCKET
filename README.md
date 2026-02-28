@@ -1,6 +1,63 @@
 # DA-AIRFLOW_RETAILROCKET
 Apache Airflow 기반 RetailRocket clickstream 분석 파이프라인 포트폴리오
 
+## 1분 요약 카드
+
+- **Problem (1줄)**: 배치 성공만으로는 KPI 신뢰가 보장되지 않아, 재현 가능한 데이터 모델/품질 게이트/산출물 전달 체계를 함께 설계했습니다.
+- **Outputs (3종)**: `Funnel` (`rr_funnel_daily_*`), `Cohort` (`rr_cohort_weekly_*`), `CRM` (`rr_crm_targets_*`)
+- **신뢰 보장 (QA gate 5종)**: 이벤트 도메인, transaction 무결성, 핵심 키 null, 핵심 테이블 row count sanity, KPI 범위(CVR 0~1)
+- **재현 방법 (Quickstart)**:
+
+```bash
+cp .env.example .env
+make up
+make init
+make run-dag
+make check
+```
+
+---
+
+## Quickstart
+
+```bash
+cp .env.example .env
+make up
+make init
+make run-dag
+make check
+```
+
+- 로컬 단일 실행 스크립트: `make run-linux`
+- 수동 백필: Airflow UI에서 `dag_run.conf.target_date` 지정 (예: `2015-09-18`)
+
+---
+
+## 6) Verification (실행 검증)
+
+- 성공 run: `manual_backfill_2015-09-18`
+- 검증 결과:
+  - `compute_kpis` 포함 전체 태스크 success
+  - export 파일 생성 확인
+
+산출물 예시:
+
+```text
+logs/reports/rr_funnel_daily_2015-09-18.csv
+logs/reports/rr_cohort_weekly_2015-09-18.csv
+logs/reports/rr_crm_targets_2015-09-18.csv
+logs/reports/rr_pipeline_summary_2015-09-18.txt
+```
+
+---
+
+## Project Page (GitHub Pages)
+
+- 문서 랜딩(placeholder): `https://<your-github-username>.github.io/da-airflow-retailrocket/`
+- MkDocs 초안 위치: `mkdocs.yml`, `docs-site/docs/`
+
+---
+
 ## 0) Why I built this (Problem → Goal)
 
 ### Problem
@@ -134,21 +191,6 @@ STAGING이 “정제된 원본”이라면 MART는 “의사결정용 모델”�
 - `catchup=False` (대량 자동 백필 방지)
 - `max_active_runs=1`
 - 수동 백필: `dag_run.conf.target_date` 지원
-
----
-
-## 6) Verification (실행 검증)
-
-- 성공 run: `manual_backfill_2015-09-18`
-- 검증 결과:
-  - `compute_kpis` 포함 전체 태스크 success
-  - export 파일 생성 확인
-
-산출물 예시:
-- `logs/reports/rr_funnel_daily_2015-09-18.csv`
-- `logs/reports/rr_cohort_weekly_2015-09-18.csv`
-- `logs/reports/rr_crm_targets_2015-09-18.csv`
-- `logs/reports/rr_pipeline_summary_2015-09-18.txt`
 
 ---
 
