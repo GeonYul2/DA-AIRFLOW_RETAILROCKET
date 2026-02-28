@@ -3,10 +3,10 @@ site_description: Airflow 기반 RetailRocket 분석 파이프라인 문서
 site_url: https://<your-github-username>.github.io/da-airflow-retailrocket/
 repo_url: https://github.com/<your-github-username>/da-airflow-retailrocket
 edit_uri: ""
-docs_dir: docs-site/docs
+docs_dir: docs
 
 theme:
-  name: mkdocs
+  name: material
 
 nav:
   - Home: index.md

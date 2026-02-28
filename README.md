@@ -54,7 +54,8 @@ logs/reports/rr_pipeline_summary_2015-09-18.txt
 ## Project Page (GitHub Pages)
 
 - 문서 랜딩(placeholder): `https://<your-github-username>.github.io/da-airflow-retailrocket/`
-- MkDocs 초안 위치: `mkdocs.yml`, `docs-site/docs/`
+- MkDocs 설정/문서 위치: `docs-site/mkdocs.yml`, `docs-site/docs/`
+- 배포 설정 후 `Settings > Pages > Source`가 `GitHub Actions`로 표시되는지 확인하세요.
 
 ---
 
