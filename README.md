@@ -10,22 +10,22 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 
 ## 내가 본 리스크
 - 세션 기준이 흔들리면 CVR 추세 해석이 바뀝니다.
-- transaction 무결성이 깨지면 구매/매출 지표가 조용히 왜곡됩니다.
+- transaction 무결성이 깨지면 구매/매출 지표가 과대·과소 추정될 수 있습니다.
 - 배치 성공만 확인하면 도메인 오류·결측·중복이 KPI까지 전파됩니다.
 - 지표 정의가 팀별로 다르면 같은 숫자도 다르게 해석됩니다.
-- 전달 포맷이 없으면 분석 결과가 실행(캠페인/CRM)으로 연결되지 않습니다.
+- 전달 포맷이 없으면 분석 결과를 대시보드·캠페인 실행 입력으로 넘기기 어렵습니다.
 
 ## 내가 한 선택
 - 분석용 테이블 단계에서 세션 기준(30분 inactivity + 날짜 변경)을 통일했습니다.
 - 지표 정의(분자/분모)와 전처리/세션화 단계를 분리해 책임 경계를 명확히 했습니다.
 - QA 5종(도메인/무결성/null/row count/KPI 범위)을 DAG에 넣어 품질 통과 후만 산출합니다.
 - 퍼널·코호트·CRM 결과를 CSV 3종과 요약 TXT로 고정해 전달 형식을 단순화했습니다.
-- 특정 날짜를 지정해 과거 데이터를 다시 계산(재현/검증)할 수 있게 했습니다.
+- Airflow 실행 시 `target_date`를 지정해 과거 날짜를 다시 계산(재현/검증)할 수 있게 했습니다.
 
 ## 결과
-- KPI 해석 기준이 고정되어 일자별 비교 신뢰도가 올라갔습니다.
-- 품질 이슈를 계산 단계에서 조기에 탐지하도록 바뀌었습니다.
-- 운영팀이 바로 쓰는 퍼널·코호트·CRM 산출물이 자동 생성됩니다.
+- 품질 체크 5종을 모두 통과한 경우에만 export 단계가 실행됩니다.
+- 실행 1회마다 CSV 3종 + 요약 TXT 1종, 총 4개 산출물이 자동 생성됩니다.
+- KPI 계산 테이블(4종)과 품질 검증 쿼리(5종)를 분리해 오류 원인을 추적하기 쉽게 만들었습니다.
 
 ## Who this helps
 - **BA/그로스**: 캠페인 성과 해석 전에 지표 정의와 세션 기준을 먼저 확인할 수 있습니다.
@@ -60,20 +60,22 @@ logs/reports/rr_pipeline_summary_2015-09-18.txt
 
 ## Project Overview
 
-| 단계 | 목적 | 주요 산출 |
+| 단계 | 목적 | 설명(산출물) |
 |---|---|---|
-| RAW | 원본 로그를 보존해 추적 기준을 유지 | `raw_rr_*` |
+| RAW | 원본 로그를 보존해 추적 기준을 유지 | `raw_rr_events`, `raw_rr_item_properties`, `raw_rr_category_tree` |
 | STAGING | 타입/포맷을 통일해 반복 변환 차이를 줄임 | `stg_rr_events`, `stg_rr_item_snapshot`, `stg_rr_category_dim` |
-| MART | 분석 단위(fact/dim, 세션)를 고정 | `dim_rr_*`, `fact_rr_*` |
-| KPI | 퍼널·코호트·CRM 정의를 계산 테이블로 분리 | `mart_rr_funnel_daily`, `mart_rr_cohort_weekly`, `mart_rr_crm_targets_daily` |
-| QA | 품질 기준 통과 여부를 실행 조건으로 적용 | `quality_check_runs` |
-| EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | CSV 3종 + summary TXT |
+| MART | 분석 단위(fact/dim, 세션)를 고정 | `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`, `fact_rr_events`, `fact_rr_sessions` |
+| KPI | 퍼널·코호트·CRM 정의를 계산 테이블로 분리 | `mart_rr_funnel_daily`, `mart_rr_funnel_category_daily`, `mart_rr_cohort_weekly`, `mart_rr_crm_targets_daily` |
+| QA | 품질 기준 통과 여부를 실행 조건으로 적용 | `quality_check_runs` (check_name, status, rows) |
+| EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | `logs/reports/rr_*.csv`, `logs/reports/rr_pipeline_summary_*.txt` |
 
 ---
 
 ## Architecture
 
-![Pipeline Architecture](docs/assets/pipeline_architecture.svg)
+[![Pipeline Architecture (click to zoom)](docs/assets/pipeline_architecture.png)](docs/assets/pipeline_architecture.svg)
+
+- 확대 보기(SVG): `docs/assets/pipeline_architecture.svg`
 
 ---
 
