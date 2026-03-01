@@ -1,11 +1,11 @@
-<svg width="1800" height="860" viewBox="0 0 1800 860" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1800" height="560" viewBox="0 0 1800 560" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style>
       .title { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 40px; font-weight: 700; fill: #0f172a; }
+      .subTitle { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 22px; font-weight: 500; fill: #475569; }
       .boxTitle { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 34px; font-weight: 700; fill: #0f172a; }
-      .boxSub { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 22px; font-weight: 500; fill: #334155; }
-      .panelTitle { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 30px; font-weight: 700; fill: #0f172a; }
-      .panelLine { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 21px; font-weight: 500; fill: #334155; }
+      .boxLine { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 21px; font-weight: 500; fill: #334155; }
+      .gate { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #334155; }
       .footer { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 18px; font-weight: 500; fill: #475569; }
     </style>
     <marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
@@ -13,70 +13,62 @@
     </marker>
   </defs>
 
-  <rect x="0" y="0" width="1800" height="860" fill="#f8fafc"/>
-  <text x="900" y="68" text-anchor="middle" class="title">Airflow RetailRocket Pipeline Architecture (RAW → EXPORT)</text>
+  <rect x="0" y="0" width="1800" height="560" fill="#f8fafc"/>
+  <text x="900" y="62" text-anchor="middle" class="title">Airflow RetailRocket Pipeline Architecture</text>
+  <text x="900" y="96" text-anchor="middle" class="subTitle">RAW → STAGING → MART → KPI → QA → EXPORT</text>
 
-  <!-- Layer boxes -->
   <g>
-    <rect x="30" y="130" rx="18" ry="18" width="250" height="220" fill="#dbeafe" stroke="#334155" stroke-width="2.5"/>
-    <text x="155" y="230" text-anchor="middle" dominant-baseline="middle" class="boxTitle">RAW</text>
-    <text x="155" y="258" text-anchor="middle" dominant-baseline="middle" class="boxSub">events / category</text>
-    <text x="155" y="286" text-anchor="middle" dominant-baseline="middle" class="boxSub">item properties</text>
+    <rect x="32" y="170" rx="18" ry="18" width="250" height="220" fill="#dbeafe" stroke="#334155" stroke-width="2.5"/>
+    <text x="157" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">RAW</text>
+    <text x="157" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">events / category</text>
+    <text x="157" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">item properties</text>
   </g>
 
   <g>
-    <rect x="320" y="130" rx="18" ry="18" width="250" height="220" fill="#dcfce7" stroke="#334155" stroke-width="2.5"/>
-    <text x="445" y="230" text-anchor="middle" dominant-baseline="middle" class="boxTitle">STAGING</text>
-    <text x="445" y="258" text-anchor="middle" dominant-baseline="middle" class="boxSub">normalize &amp; cast</text>
-    <text x="445" y="286" text-anchor="middle" dominant-baseline="middle" class="boxSub">snapshot / category tree</text>
+    <rect x="322" y="170" rx="18" ry="18" width="250" height="220" fill="#dcfce7" stroke="#334155" stroke-width="2.5"/>
+    <text x="447" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">STAGING</text>
+    <text x="447" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">normalize &amp; cast</text>
+    <text x="447" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">snapshot / category tree</text>
   </g>
 
   <g>
-    <rect x="610" y="130" rx="18" ry="18" width="250" height="220" fill="#fef3c7" stroke="#334155" stroke-width="2.5"/>
-    <text x="735" y="230" text-anchor="middle" dominant-baseline="middle" class="boxTitle">MART</text>
-    <text x="735" y="258" text-anchor="middle" dominant-baseline="middle" class="boxSub">dim/fact modeling</text>
-    <text x="735" y="286" text-anchor="middle" dominant-baseline="middle" class="boxSub">sessionization</text>
+    <rect x="612" y="170" rx="18" ry="18" width="250" height="220" fill="#fef3c7" stroke="#334155" stroke-width="2.5"/>
+    <text x="737" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">MART</text>
+    <text x="737" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">dim / fact modeling</text>
+    <text x="737" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">sessionization</text>
   </g>
 
   <g>
-    <rect x="900" y="130" rx="18" ry="18" width="250" height="220" fill="#fee2e2" stroke="#334155" stroke-width="2.5"/>
-    <text x="1025" y="230" text-anchor="middle" dominant-baseline="middle" class="boxTitle">KPI</text>
-    <text x="1025" y="258" text-anchor="middle" dominant-baseline="middle" class="boxSub">funnel / cohort</text>
-    <text x="1025" y="286" text-anchor="middle" dominant-baseline="middle" class="boxSub">CRM targets</text>
+    <rect x="902" y="170" rx="18" ry="18" width="250" height="220" fill="#fee2e2" stroke="#334155" stroke-width="2.5"/>
+    <text x="1027" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">KPI</text>
+    <text x="1027" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">funnel / cohort</text>
+    <text x="1027" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">CRM targets</text>
   </g>
 
   <g>
-    <rect x="1190" y="130" rx="18" ry="18" width="250" height="220" fill="#e9d5ff" stroke="#334155" stroke-width="2.5"/>
-    <text x="1315" y="230" text-anchor="middle" dominant-baseline="middle" class="boxTitle">QA</text>
-    <text x="1315" y="258" text-anchor="middle" dominant-baseline="middle" class="boxSub">domain / null / integrity</text>
-    <text x="1315" y="286" text-anchor="middle" dominant-baseline="middle" class="boxSub">sanity checks</text>
+    <rect x="1192" y="170" rx="18" ry="18" width="250" height="220" fill="#e9d5ff" stroke="#334155" stroke-width="2.5"/>
+    <text x="1317" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">QA</text>
+    <text x="1317" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">domain / null / integrity</text>
+    <text x="1317" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">sanity checks</text>
   </g>
 
   <g>
-    <rect x="1480" y="130" rx="18" ry="18" width="290" height="220" fill="#ccfbf1" stroke="#334155" stroke-width="2.5"/>
-    <text x="1625" y="230" text-anchor="middle" dominant-baseline="middle" class="boxTitle">EXPORT</text>
-    <text x="1625" y="258" text-anchor="middle" dominant-baseline="middle" class="boxSub">CSV reports</text>
-    <text x="1625" y="286" text-anchor="middle" dominant-baseline="middle" class="boxSub">pipeline summary</text>
+    <rect x="1482" y="170" rx="18" ry="18" width="286" height="220" fill="#ccfbf1" stroke="#334155" stroke-width="2.5"/>
+    <text x="1625" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">EXPORT</text>
+    <text x="1625" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">CSV 3 files</text>
+    <text x="1625" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">summary TXT 1 file</text>
   </g>
 
-  <!-- Arrows -->
-  <line x1="280" y1="240" x2="320" y2="240" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
-  <line x1="570" y1="240" x2="610" y2="240" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
-  <line x1="860" y1="240" x2="900" y2="240" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
-  <line x1="1150" y1="240" x2="1190" y2="240" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
-  <line x1="1440" y1="240" x2="1480" y2="240" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="282" y1="280" x2="322" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="572" y1="280" x2="612" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="862" y1="280" x2="902" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="1152" y1="280" x2="1192" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="1442" y1="280" x2="1482" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
 
-  <!-- MART detail panel -->
-  <rect x="90" y="420" rx="18" ry="18" width="1620" height="320" fill="#ffffff" stroke="#cbd5e1" stroke-width="2.5"/>
-  <text x="130" y="472" class="panelTitle">MART Detail</text>
+  <rect x="1408" y="122" rx="10" ry="10" width="210" height="34" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
+  <text x="1513" y="144" text-anchor="middle" dominant-baseline="middle" class="gate">QA PASS → EXPORT</text>
 
-  <text x="130" y="518" class="panelLine">• Dimensions: dim_rr_category, dim_rr_item, dim_rr_visitor</text>
-  <text x="130" y="554" class="panelLine">• Facts: fact_rr_events(session_id), fact_rr_sessions(views/carts/purchases + flags)</text>
-  <text x="130" y="590" class="panelLine">• Session Rule: 첫 이벤트 OR 날짜 변경 OR 이전 이벤트 대비 30분 초과 비활동</text>
-  <text x="130" y="626" class="panelLine">• Session ID: visitor_id-session_index</text>
-  <text x="130" y="662" class="panelLine">• QA Gate 통과 후 CSV 3종 + summary TXT 1종 export</text>
-
-  <text x="900" y="804" text-anchor="middle" class="footer">
-    Outputs: rr_funnel_daily.csv / rr_cohort_weekly.csv / rr_crm_targets.csv / rr_pipeline_summary.txt
+  <text x="900" y="514" text-anchor="middle" class="footer">
+    Output path: logs/reports/rr_funnel_daily_*.csv, rr_cohort_weekly_*.csv, rr_crm_targets_*.csv, rr_pipeline_summary_*.txt
   </text>
 </svg>

@@ -110,20 +110,6 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 
 ---
 
-## Quickstart
-
-```bash
-cp .env.example .env
-make up
-make init
-make run-dag
-```
-
-- 점검: `make check`
-- 수동 재계산: Airflow UI에서 `dag_run.conf.target_date` 지정 (예: `2015-09-18`)
-
----
-
 ## Outputs
 
 ```text
