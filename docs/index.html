@@ -4,128 +4,124 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>배치 성공이 아니라 KPI 신뢰를 보장하는 Airflow 파이프라인</title>
-  <meta name="description" content="RetailRocket clickstream 기반 Funnel·Cohort·CRM 산출, QA 게이트, 백필 재현을 갖춘 포트폴리오 랜딩페이지" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="RetailRocket clickstream으로 Funnel·Cohort·CRM 타겟을 산출하고, 지표 정의·세션 기준·QA를 고정해 KPI 신뢰를 확보한 데이터 파이프라인 포트폴리오." />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <header class="hero">
-    <div class="container">
-      <p class="chip">대표 재현: target_date=2015-06-16</p>
-      <h1>배치 성공이 아니라 KPI 신뢰를 보장하는 Airflow 파이프라인</h1>
-      <p class="subtitle">RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출합니다.</p>
-      <p class="subtitle">핵심은 지표 정의·세션 기준·품질 검증을 고정해 같은 데이터에서 같은 KPI가 나오게 만드는 것입니다.</p>
-      <div class="cta-row">
-        <a class="btn primary" href="https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET" target="_blank" rel="noopener">GitHub Repo</a>
-        <a class="btn" href="https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET/blob/main/README.md" target="_blank" rel="noopener">README</a>
-      </div>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#top">DA-AIRFLOW_RETAILROCKET</a>
+      <nav class="top-links">
+        <a href="https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET" target="_blank" rel="noreferrer">GitHub Repo</a>
+        <a href="https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET/blob/main/README.md" target="_blank" rel="noreferrer">README</a>
+      </nav>
     </div>
   </header>
 
-  <main class="container">
+  <main id="top" class="wrap article">
+    <section class="hero">
+      <span class="chip">대표 재현: target_date=2015-06-16</span>
+      <h1>배치 성공이 아니라 KPI 신뢰를 보장하는 Airflow 파이프라인</h1>
+      <p>
+        RetailRocket clickstream으로 <strong>퍼널·코호트·CRM 타겟</strong>을 산출합니다.<br />
+        핵심은 산출 자체보다, <strong>지표 정의·세션 기준·QA</strong>를 고정해 같은 데이터에서 같은 KPI가 나오도록 만든 점입니다.
+      </p>
+    </section>
+
     <section>
-      <h2>현업 시나리오</h2>
-      <p>CVR 급락 알림이 오면 먼저 캠페인/예산 조정을 논의합니다.</p>
-      <p>하지만 세션 기준, 전환 정의, <code>transaction_id</code> 누락이 다르면 같은 로그에서도 결론이 달라질 수 있습니다.</p>
-      <p>그래서 이 프로젝트는 배치 성공보다 KPI 신뢰를 먼저 확인하도록 설계했습니다.</p>
+      <h2>왜 이걸 만들었나</h2>
+      <p>
+        CVR 급락 알림이 오면 보통 캠페인과 예산부터 조정합니다.
+        그런데 세션 기준이 바뀌거나 전환 정의가 달라지거나 <code>transaction_id</code> 누락이 생기면,
+        같은 로그에서도 결론이 달라집니다.
+      </p>
+      <p>
+        그래서 이 파이프라인은 <strong>배치 성공</strong>보다 먼저 <strong>KPI 신뢰</strong>를 확인하도록 설계했습니다.
+      </p>
     </section>
 
     <section>
       <h2>내가 만든 것</h2>
-      <div class="grid cards-4">
+      <div class="cards">
         <article class="card">
-          <h3>Funnel / Cohort / CRM Targets</h3>
-          <p>퍼널·코호트·CRM 타겟을 일 단위로 계산합니다.</p>
+          <h3>분석 산출</h3>
+          <p>Funnel / Cohort / CRM Targets</p>
         </article>
         <article class="card">
-          <h3>QA gates 5종</h3>
-          <p>domain, integrity, null, rowcount, KPI range(0~1)를 매 실행 검증합니다.</p>
+          <h3>QA 게이트 5종</h3>
+          <p>domain · integrity · null · rowcount · KPI range(0~1)</p>
         </article>
         <article class="card">
-          <h3>Export 전달물 4종</h3>
-          <p>CSV 3개 + summary TXT 1개를 고정 포맷으로 생성합니다.</p>
+          <h3>운영 전달물</h3>
+          <p>CSV 3종 + summary TXT 1종</p>
         </article>
         <article class="card">
-          <h3>Backfill 재현</h3>
-          <p><code>target_date</code> 지정으로 과거 날짜 재계산/검증이 가능합니다.</p>
+          <h3>재현 실행</h3>
+          <p><code>target_date</code>로 과거 날짜 backfill</p>
         </article>
       </div>
     </section>
 
     <section>
-      <h2>Proof</h2>
+      <h2>증거</h2>
       <div class="proof-grid">
-        <figure class="card">
-          <img src="assets/rr_nunel_daily-graph.png" alt="Airflow DAG graph success capture" loading="lazy" />
-          <figcaption>실제로 돌려보면: DAG Graph에서 전 태스크 success 확인</figcaption>
+        <figure class="proof-card">
+          <img src="./assets/airflow_run_success.png" alt="Airflow DAG graph, all tasks success" />
+          <figcaption>Run evidence: manual backfill run, all tasks success</figcaption>
         </figure>
-        <figure class="card">
-          <img src="assets/airflow_run_success.png" alt="Airflow DAG all tasks success" loading="lazy" />
-          <figcaption>실제로 돌려보면: manual backfill run에서 모든 태스크가 success</figcaption>
-        </figure>
-        <figure class="card">
-          <img src="assets/outputs_2015-06-16.png" alt="Output files generated for 2015-06-16" loading="lazy" />
-          <figcaption>무엇이 남나: CSV 3종 + summary TXT 1종 생성 (2015-06-16)</figcaption>
+        <figure class="proof-card">
+          <img src="./assets/outputs_2015-06-16.png" alt="Generated outputs for 2015-06-16" />
+          <figcaption>Output evidence: CSV 3종 + summary TXT 생성(2015-06-16)</figcaption>
         </figure>
       </div>
     </section>
 
     <section>
       <h2>설계 한 장 요약</h2>
-      <figure class="card architecture-figure">
-        <img src="assets/pipeline_architecture.svg" alt="Pipeline Architecture" loading="lazy" />
+      <figure class="arch">
+        <img src="./assets/pipeline_architecture.svg" alt="Pipeline architecture" />
       </figure>
       <ul class="summary-list">
-        <li><strong>RAW</strong>: 원본 보존으로 추적 가능성 확보</li>
-        <li><strong>STAGING</strong>: 타입/포맷 표준화로 전처리 편차 감소</li>
+        <li><strong>RAW</strong>: 원본 로그 보존으로 추적 가능성 확보</li>
+        <li><strong>STAGING</strong>: 타입/포맷 표준화로 전처리 편차 축소</li>
         <li><strong>DATA MART</strong>: dim/fact + 세션화로 분석 단위 통일</li>
-        <li><strong>KPI</strong>: 퍼널·코호트·CRM 계산 테이블 분리</li>
-        <li><strong>QA</strong>: 품질 기준 통과 여부를 실행 조건으로 적용</li>
-        <li><strong>EXPORT</strong>: 운영 전달용 고정 포맷 생성</li>
+        <li><strong>KPI</strong>: 퍼널·코호트·CRM 계산 분리로 정의 단일화</li>
+        <li><strong>QA</strong>: 5개 검증 통과 여부를 실행 조건으로 적용</li>
+        <li><strong>EXPORT</strong>: 운영 전달용 고정 포맷(CSV/TXT) 생성</li>
       </ul>
     </section>
 
     <section>
-      <h2>지표 요약</h2>
-      <div class="grid cards-3">
-        <article class="card">
-          <h3>Funnel</h3>
-          <p>전환 병목(조회→장바구니→구매)을 확인합니다.</p>
-        </article>
-        <article class="card">
-          <h3>Cohort</h3>
-          <p>유지율로 재방문/재구매 흐름을 확인합니다.</p>
-        </article>
-        <article class="card">
-          <h3>CRM Targets</h3>
-          <p>캠페인 실행에 바로 쓰는 타겟 리스트를 생성합니다.</p>
-        </article>
-      </div>
-      <div class="card">
-        <h3>KPI가 흔들리는 순간 3가지</h3>
-        <ul>
-          <li>세션 기준 변경</li>
-          <li>전환 정의(분자/분모) 변경</li>
-          <li><code>transaction_id</code> 누락/중복</li>
-        </ul>
-      </div>
-    </section>
-
-    <section>
-      <h2>So what</h2>
+      <h2>결과</h2>
       <ul class="summary-list">
-        <li><strong>BA/그로스</strong>: 캠페인 조정 전에 기준/정의/누락을 먼저 점검할 수 있습니다.</li>
-        <li><strong>DQA/운영</strong>: 배치 성공과 KPI 신뢰를 분리해 품질 기준으로 운영할 수 있습니다.</li>
+        <li>실행 1회마다 동일 포맷 산출물 4개를 자동 생성</li>
+        <li>샘플 실행(2015-06-16): visitors 4,379 / sessions 4,540 / purchases 67</li>
+        <li>CRM 타겟 312명(80/115/117), QA 5종 PASS 후에만 export</li>
       </ul>
-      <p class="next"><strong>Next</strong><br />Slack 실패 알림, 품질 대시보드, dbt/GE 테스트 연계로 확장할 수 있습니다.</p>
+    </section>
+
+    <section>
+      <h2>활용 관점</h2>
+      <ul class="summary-list">
+        <li><strong>BA/그로스</strong>: KPI 급락 시 캠페인 조정보다 먼저 정의/세션/누락을 점검</li>
+        <li><strong>DQA/운영</strong>: 배치 성공과 KPI 신뢰를 분리해 품질 기준으로 운영</li>
+      </ul>
+      <p class="next">Next: Slack 알림, 품질 대시보드, dbt/GE 테스트 연계로 확장 가능</p>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="container footer-links">
-      <a href="https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET" target="_blank" rel="noopener">GitHub Repo</a>
-      <a href="https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET/blob/main/README.md" target="_blank" rel="noopener">README</a>
-      <a href="https://geonyul2.github.io/DA-AIRFLOW_RETAILROCKET/" target="_blank" rel="noopener">Pages</a>
+    <div class="wrap footer-inner">
+      <div>© <span id="y"></span> GeonYul</div>
+      <div class="footer-links">
+        <a href="https://geonyul2.github.io/DA-AIRFLOW_RETAILROCKET/" target="_blank" rel="noreferrer">Project Page</a>
+        <a href="#top">맨 위로</a>
+      </div>
     </div>
   </footer>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
