@@ -49,89 +49,70 @@ EDA 참고:
 | QA | 품질 기준 선반영 | domain / integrity / null / rowcount / KPI range(0~1) 5개 체크를 실행 조건으로 적용 |
 | EXPORT | 실행 가능한 전달물 생성 | QA 통과 시에만 CSV 3종 + summary TXT 1종을 고정 파일명 패턴으로 생성 |
 
-아래 상세는 **워크플로우 순서(RAW → STAGING → DATA MART → KPI → QA → EXPORT)** 로 정리했습니다.
-
 <details>
-<summary><strong>RAW 상세 (원본 보존과 적재 기준)</strong></summary>
+<summary><strong>워크플로우 전체 상세 보기 (RAW → STAGING → DATA MART → KPI → QA → EXPORT)</strong></summary>
 
-- 원본 CSV(`events`, `item_properties`, `category_tree`)를 보존해 재처리 기준을 고정합니다.
-- 적재는 `scripts/load_raw/load_retailrocket.py`에서 수행합니다.
-- DDL 기준: [`001_create_tables.sql`](sql/retailrocket/00_ddl/001_create_tables.sql)
+### 1) RAW — 원본을 “훼손 없이” 보존
+- **왜 필요한가**: 원본이 바뀌면 원인 추적이 불가능해집니다. 재현 가능한 분석의 출발점은 원본 보존입니다.
+- **어떻게 했나**: `events.csv`, `item_properties*.csv`, `category_tree.csv`를 그대로 적재하고 이후 레이어(STAGING/MART)와 분리했습니다.
+- **관련 코드**
+  - 적재 스크립트: `scripts/load_raw/load_retailrocket.py`
+  - 테이블 정의: [`001_create_tables.sql`](sql/retailrocket/00_ddl/001_create_tables.sql)
 
-</details>
+### 2) STAGING — 분석 전에 “형식”을 먼저 통일
+- **왜 필요한가**: 원본 로그는 타입/시간/속성 포맷이 제각각이라 바로 집계하면 팀마다 다른 결과가 나옵니다.
+- **어떻게 했나**
+  - 이벤트 타입을 허용값(`view/addtocart/transaction`) 기준으로 정규화
+  - `timestamp_ms`를 사람이 해석 가능한 `event_ts`, 집계용 `event_date`로 변환
+  - item property를 최신 값 기준으로 스냅샷화(조인 안정화)
+  - 카테고리 트리를 평탄화해 차원 조인 비용 축소
+- **관련 SQL**
+  - [`001_stg_rr_events.sql`](sql/retailrocket/10_staging/001_stg_rr_events.sql)
+  - [`002_stg_rr_item_snapshot.sql`](sql/retailrocket/10_staging/002_stg_rr_item_snapshot.sql)
+  - [`003_stg_rr_category_dim.sql`](sql/retailrocket/10_staging/003_stg_rr_category_dim.sql)
 
-<details>
-<summary><strong>STAGING 상세 (전처리 편차를 제거하는 표준화 레이어)</strong></summary>
+### 3) DATA MART — 분석 단위를 세션/팩트 중심으로 고정
+- **왜 필요한가**: 같은 이벤트라도 “세션을 어떻게 자르느냐”에 따라 CVR이 달라집니다.
+- **어떻게 했나**
+  - visitor별 시간순 정렬 후 세션 경계 규칙을 SQL로 고정
+  - 새 세션 시작 조건: (1) 첫 이벤트, (2) 날짜 변경, (3) 이전 이벤트와 30분 초과 간격
+  - 세션 ID(`visitor_id-session_index`) 생성 후 세션 단위 집계 테이블 구성
+- **관련 SQL**
+  - 이벤트 세션화: [`010_fact_rr_events.sql`](sql/retailrocket/20_mart/010_fact_rr_events.sql)
+  - 세션 집계: [`020_fact_rr_sessions.sql`](sql/retailrocket/20_mart/020_fact_rr_sessions.sql)
 
-- 이벤트 정규화: 허용 이벤트 타입(`view/addtocart/transaction`) 기준으로 정제
-- 시간 표준화: `timestamp_ms`를 `event_ts`, `event_date`로 변환
-- 아이템 속성 최신화: item property에서 최신 스냅샷 추출
-- 카테고리 계층 평탄화: 분석 조인에 바로 쓰도록 차원 형태로 변환
+### 4) KPI — “숫자”가 아니라 “정의”를 고정
+- **왜 필요한가**: KPI는 값보다 정의가 중요합니다. 분자/분모가 흔들리면 비교 자체가 무의미해집니다.
+- **어떻게 했나**
+  - **Funnel(일 단위)**: “그 날짜에 생성된 세션 중 어디까지 진행했는가”를 비율로 계산
+    - 예) `cvr_session_to_purchase = sessions_with_purchase / sessions`
+  - **Cohort(주 단위)**: “첫 구매 주차별 사용자군이 다음 주에도 돌아오는가”를 유지율로 계산
+    - 예) `retention_rate = active_visitors / cohort_size`
+  - **CRM Targets(일 단위)**: “오늘 액션 가능한 대상”을 규칙 기반 세그먼트로 생성
+    - 장바구니 이탈자, 고의도 조회자(7일), 반복구매자
+- **관련 SQL**
+  - Funnel: [`001_mart_rr_funnel_daily.sql`](sql/retailrocket/30_kpi/001_mart_rr_funnel_daily.sql)
+  - Cohort: [`003_mart_rr_cohort_weekly.sql`](sql/retailrocket/30_kpi/003_mart_rr_cohort_weekly.sql)
+  - CRM: [`004_mart_rr_crm_targets_daily.sql`](sql/retailrocket/30_kpi/004_mart_rr_crm_targets_daily.sql)
 
-SQL:
-- [`001_stg_rr_events.sql`](sql/retailrocket/10_staging/001_stg_rr_events.sql)
-- [`002_stg_rr_item_snapshot.sql`](sql/retailrocket/10_staging/002_stg_rr_item_snapshot.sql)
-- [`003_stg_rr_category_dim.sql`](sql/retailrocket/10_staging/003_stg_rr_category_dim.sql)
+### 5) QA — “배치 성공”이 아니라 “품질 통과”를 게이트로 사용
+- **왜 필요한가**: DAG가 성공해도 데이터가 잘못되면 잘못된 의사결정을 자동화하는 셈입니다.
+- **어떻게 했나**: 아래 5개 품질 검사를 모두 통과한 경우에만 다음 단계(EXPORT)로 진행합니다.
 
-</details>
-
-<details>
-<summary><strong>DATA MART 상세 (세션 규칙을 고정해 분석 단위를 통일)</strong></summary>
-
-세션 분리는 visitor 단위 정렬 후 아래 조건에서 새 세션을 시작합니다.
-1. 해당 visitor의 첫 이벤트
-2. 이벤트 날짜 변경
-3. 이전 이벤트 대비 30분 초과 inactivity
-
-세션 ID는 `visitor_id-session_index`로 생성합니다.
-
-SQL:
-- 이벤트 세션화: [`010_fact_rr_events.sql`](sql/retailrocket/20_mart/010_fact_rr_events.sql)
-- 세션 집계: [`020_fact_rr_sessions.sql`](sql/retailrocket/20_mart/020_fact_rr_sessions.sql)
-
-</details>
-
-<details>
-<summary><strong>KPI 상세 (분자·분모/세그먼트 기준 고정)</strong></summary>
-
-### Funnel (일 단위)
-- `cvr_session_to_purchase = sessions_with_purchase / sessions`
-- `cvr_view_to_cart = sessions_with_cart / sessions_with_view`
-- `cvr_cart_to_purchase = sessions_with_purchase / sessions_with_cart`
-- SQL: [`001_mart_rr_funnel_daily.sql`](sql/retailrocket/30_kpi/001_mart_rr_funnel_daily.sql)
-
-### Cohort (주 단위)
-- 코호트 기준: visitor의 첫 구매 주(`cohort_week`)
-- 유지율: `retention_rate = active_visitors / cohort_size`
-- SQL: [`003_mart_rr_cohort_weekly.sql`](sql/retailrocket/30_kpi/003_mart_rr_cohort_weekly.sql)
-
-### CRM Targets (일 단위 세그먼트)
-- `cart_abandoner_today`: 당일 addtocart는 있었지만 당일 transaction이 없는 visitor
-- `high_intent_viewer_7d_no_cart`: 최근 7일 view 20회 이상, addtocart/transaction 없는 visitor
-- `repeat_buyer`: 누적 transaction_id 2건 이상인 visitor
-- SQL: [`004_mart_rr_crm_targets_daily.sql`](sql/retailrocket/30_kpi/004_mart_rr_crm_targets_daily.sql)
-
-</details>
-
-<details>
-<summary><strong>QA 상세 (무엇을 검사하고, 언제 실패하는가)</strong></summary>
-
-| 체크 | 검사 내용 | 실패 조건 | SQL |
+| 체크 | 무엇을 막는가 | 실패 조건 | SQL |
 |---|---|---|---|
-| Domain check | 이벤트 타입이 허용값(`view/addtocart/transaction`)인지 확인 | 허용값 외 이벤트 존재 | [`001_domain_checks.sql`](sql/retailrocket/90_quality/001_domain_checks.sql) |
-| Transaction integrity | `transaction` 이벤트에 `transaction_id`가 있는지 확인 | `transaction_id` NULL 존재 | [`002_transaction_integrity.sql`](sql/retailrocket/90_quality/002_transaction_integrity.sql) |
-| Null checks | 핵심 키(`timestamp_ms`,`visitor_id`,`item_id`,`event_ts`) 결측 확인 | 핵심 키 NULL 존재 | [`003_null_checks.sql`](sql/retailrocket/90_quality/003_null_checks.sql) |
-| Rowcount sanity | 핵심 테이블이 비어있는지 확인 | `stg_rr_events`/`fact_rr_events`/`fact_rr_sessions` 중 0건 존재 | [`004_rowcount_sanity.sql`](sql/retailrocket/90_quality/004_rowcount_sanity.sql) |
-| KPI sanity | 퍼널 값 음수 여부, CVR 범위(0~1) 확인 | 음수 값 또는 CVR 범위 이탈 | [`005_kpi_sanity.sql`](sql/retailrocket/90_quality/005_kpi_sanity.sql) |
+| Domain check | 허용되지 않은 이벤트 타입 유입 | 허용값 외 이벤트 존재 | [`001_domain_checks.sql`](sql/retailrocket/90_quality/001_domain_checks.sql) |
+| Transaction integrity | 구매 이벤트 식별 불가 | `transaction_id` NULL 존재 | [`002_transaction_integrity.sql`](sql/retailrocket/90_quality/002_transaction_integrity.sql) |
+| Null checks | 핵심 키 결측으로 인한 조인/집계 왜곡 | 핵심 키 NULL 존재 | [`003_null_checks.sql`](sql/retailrocket/90_quality/003_null_checks.sql) |
+| Rowcount sanity | 빈 테이블 기반 잘못된 계산 | 핵심 테이블 0건 존재 | [`004_rowcount_sanity.sql`](sql/retailrocket/90_quality/004_rowcount_sanity.sql) |
+| KPI sanity | 비정상 KPI 수치 배포 | 음수 값 또는 CVR 범위(0~1) 이탈 | [`005_kpi_sanity.sql`](sql/retailrocket/90_quality/005_kpi_sanity.sql) |
 
-</details>
-
-<details>
-<summary><strong>EXPORT 상세 (운영 전달물 생성 규칙)</strong></summary>
-
-- QA 5종을 모두 통과한 실행에서만 export를 생성합니다.
-- 생성 파일: `rr_funnel_daily_*.csv`, `rr_cohort_weekly_*.csv`, `rr_crm_targets_*.csv`, `rr_pipeline_summary_*.txt`
-- 생성 스크립트:
+### 6) EXPORT — 운영팀이 바로 쓸 수 있는 형태로 마감
+- **왜 필요한가**: 분석 결과를 실행 포맷으로 전달하지 않으면 후속 액션이 지연됩니다.
+- **어떻게 했나**
+  - QA 5종 통과 실행에서만 CSV/TXT를 생성
+  - 파일명 규칙 고정(`rr_funnel_daily_*`, `rr_cohort_weekly_*`, `rr_crm_targets_*`, `rr_pipeline_summary_*`)
+- **관련 스크립트**
   - [`export_rr_funnel_csv.py`](scripts/export_rr_funnel_csv.py)
   - [`export_rr_cohort_csv.py`](scripts/export_rr_cohort_csv.py)
   - [`export_rr_crm_targets_csv.py`](scripts/export_rr_crm_targets_csv.py)
