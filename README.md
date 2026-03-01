@@ -1,59 +1,53 @@
 # DA-AIRFLOW_RETAILROCKET
-로그 기반 KPI가 흔들리는 현업에서 **세션·지표 정의를 고정**했습니다.  
-**QA로 왜곡을 차단하고 퍼널·코호트·CRM 산출물을 자동 생성**하도록 설계한 분석가 중심 프로젝트입니다.
+RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Airflow 파이프라인입니다.  
+지표 정의(분자/분모), 세션 기준(30분 inactivity + 날짜 변경), 품질 검증(5종)을 고정해 같은 데이터에서 같은 KPI가 나오도록 설계했습니다.  
+결과는 일 단위로 계산되어 운영에 바로 쓰는 CSV/TXT로 저장됩니다.
 
 ## 현업 시나리오
-월요일 아침 CVR이 급락(예: 2.4%→1.7%)했다는 알림이 오면, 마케팅/상품/운영팀은 예산 조정과 캠페인 중단 여부를 바로 논의합니다.  
-그런데 실제 원인이 성과 하락이 아니라 세션 기준 변화, 일부 transaction 누락, 팀 간 전환 정의 차이였다면 같은 로그로도 서로 다른 결론이 나옵니다.  
-이 프로젝트는 이런 오판 리스크를 줄이기 위해, 배치 성공보다 먼저 지표 기준과 품질 검증을 고정하는 운영 방식을 택했습니다.
+월요일 아침 CVR 급락 알림(예: 2.4%→1.7%)이 오면 마케팅/상품/운영팀은 예산과 캠페인 중단 여부를 바로 논의합니다.  
+이때 세션 기준 변경, transaction 누락, 전환 정의 불일치가 겹치면 같은 로그에서도 팀마다 다른 결론이 나옵니다.  
+이 프로젝트는 먼저 기준을 고정하고 품질 검증을 통과한 값만 퍼널·코호트·CRM으로 내보내도록 구성했습니다.
 
-## 내가 정의한 리스크
-- 세션 기준이 불명확하면 같은 로그로도 CVR이 달라져 트렌드 해석이 흔들립니다.
-- transaction 무결성이 깨지면 구매/매출성 지표가 조용히 왜곡됩니다.
-- 배치 성공 여부만 보면 도메인 오류·결측·중복이 KPI에 전파될 수 있습니다.
-- 지표 정의가 팀마다 다르면 같은 숫자도 서로 다르게 해석됩니다.
-- 산출물 전달 형식이 없으면 분석 결과가 실행 단계(캠페인/CRM)로 연결되지 않습니다.
+## 내가 본 리스크
+- 세션 기준이 흔들리면 CVR 추세 해석이 바뀝니다.
+- transaction 무결성이 깨지면 구매/매출 지표가 조용히 왜곡됩니다.
+- 배치 성공만 확인하면 도메인 오류·결측·중복이 KPI까지 전파됩니다.
+- 지표 정의가 팀별로 다르면 같은 숫자도 다르게 해석됩니다.
+- 전달 포맷이 없으면 분석 결과가 실행(캠페인/CRM)으로 연결되지 않습니다.
 
-## 내가 한 선택 (설계 의사결정)
-- 세션 규칙(30분 inactivity + 날짜 변경)을 MART에서 명시적으로 고정했습니다.
-- KPI 계산 레이어를 분리해 “정의 책임”과 “변환 책임”의 경계를 고정했습니다.
-- QA Gate 5종(도메인/무결성/null/row count/KPI 범위)을 DAG에 내장해 왜곡 전파를 차단했습니다.
-- 퍼널/코호트/CRM 결과를 CSV와 요약 TXT로 export해 전달 가능한 산출물로 마무리했습니다.
-- `dag_run.conf.target_date` 기반 수동 백필 경로를 열어 재현 가능한 검증을 가능하게 했습니다.
+## 내가 한 선택
+- 분석용 테이블 단계에서 세션 기준(30분 inactivity + 날짜 변경)을 통일했습니다.
+- 지표 정의(분자/분모)와 전처리/세션화 단계를 분리해 책임 경계를 명확히 했습니다.
+- QA 5종(도메인/무결성/null/row count/KPI 범위)을 DAG에 넣어 품질 통과 후만 산출합니다.
+- 퍼널·코호트·CRM 결과를 CSV 3종과 요약 TXT로 고정해 전달 형식을 단순화했습니다.
+- 특정 날짜를 지정해 과거 데이터를 다시 계산(재현/검증)할 수 있게 했습니다.
 
-## 그래서 무엇이 달라졌는가 (Impact)
-- KPI 재현 가능성과 일관성을 확보해 의사결정 신뢰도를 높였습니다.
-- 오류를 조기에 탐지해 잘못된 KPI가 의사결정으로 전파되는 위험을 줄였습니다.
-- CRM/퍼널/코호트 산출물을 운영팀이 바로 사용할 수 있는 형태로 제공했습니다.
+## 결과
+- KPI 해석 기준이 고정되어 일자별 비교 신뢰도가 올라갔습니다.
+- 품질 이슈를 계산 단계에서 조기에 탐지하도록 바뀌었습니다.
+- 운영팀이 바로 쓰는 퍼널·코호트·CRM 산출물이 자동 생성됩니다.
 
 ## Who this helps
-- **BA/그로스 분석가**: 캠페인 효과 해석 전에 지표 정의/세션 기준부터 검증할 수 있습니다.
-- **DQA/데이터 운영 담당자**: 배치 성공 여부가 아닌 KPI 신뢰 기준으로 파이프라인을 운영할 수 있습니다.
+- **BA/그로스**: 캠페인 성과 해석 전에 지표 정의와 세션 기준을 먼저 확인할 수 있습니다.
+- **DQA/운영**: 배치 성공 여부가 아니라 KPI 신뢰 기준으로 파이프라인을 운영할 수 있습니다.
 
 ---
 
-## Quickstart (재현 가능성 증거)
+## Quickstart
 
 ```bash
 cp .env.example .env
 make up
 make init
 make run-dag
-make check
 ```
 
-- `make check` 실행 전, `airflow-apiserver` 컨테이너가 up 상태여야 합니다.
-- 로컬 단일 실행 스크립트: `make run-linux`
-- 수동 백필: Airflow UI에서 `dag_run.conf.target_date` 지정 (예: `2015-09-18`)
+- 점검: `make check`
+- 수동 재계산: Airflow UI에서 `dag_run.conf.target_date` 지정 (예: `2015-09-18`)
 
 ---
 
-## Verification (결과물 증거)
-
-- 성공 run 예시: `manual_backfill_2015-09-18`
-- 확인 기준:
-  - `compute_kpis` 포함 전체 태스크 success
-  - 아래 export 산출물 생성
+## Outputs
 
 ```text
 logs/reports/rr_funnel_daily_2015-09-18.csv
@@ -64,33 +58,29 @@ logs/reports/rr_pipeline_summary_2015-09-18.txt
 
 ---
 
-## Key Design Decisions
-- **왜 30분 세션 기준인가?** 행동 단위 비교가 가능하도록 기준을 통일하면서, 과도한 세션 분절로 인한 CVR 왜곡을 최소화하기 위해.
-- **왜 KPI sanity를 0~1로 고정했는가?** 전환율 지표에서 조인 폭발·중복 집계 같은 계산 이상을 빠르게 탐지하기 위해.
-- **왜 export를 별도 단계로 뒀는가?** 운영/CRM 전달 포맷을 표준화해 분석 결과가 실행 태스크로 바로 이어지게 하기 위해.
+## Project Overview
 
----
-
-## Project Overview (문제-리스크 대응 관점)
-
-| 레이어 | 왜 필요한가 (리스크 대응) | 대표 산출 |
+| 단계 | 목적 | 주요 산출 |
 |---|---|---|
-| 🟦 RAW | 원본 로그 보존 및 추적 가능성 확보 | `raw_rr_*` |
-| 🟩 STAGING | 타입/포맷을 고정해 반복 변환과 정의 흔들림 방지 | `stg_rr_events`, `stg_rr_item_snapshot`, `stg_rr_category_dim` |
-| 🟨 MART | 세션/차원/사실 모델을 고정해 의사결정 단위를 일관화 | `dim_rr_*`, `fact_rr_*` |
-| 🟥 KPI | 퍼널/코호트/CRM 지표 정의를 계산 레이어에서 명시화 | `mart_rr_funnel_daily` 등 |
-| 🟪 QA | 배치 성공과 별개로 KPI 왜곡을 사전 차단 | `quality_check_runs` |
-| 🟦 EXPORT | 의사결정자가 바로 사용할 전달물 생성 | CSV 3종 + summary TXT |
+| RAW | 원본 로그를 보존해 추적 기준을 유지 | `raw_rr_*` |
+| STAGING | 타입/포맷을 통일해 반복 변환 차이를 줄임 | `stg_rr_events`, `stg_rr_item_snapshot`, `stg_rr_category_dim` |
+| MART | 분석 단위(fact/dim, 세션)를 고정 | `dim_rr_*`, `fact_rr_*` |
+| KPI | 퍼널·코호트·CRM 정의를 계산 테이블로 분리 | `mart_rr_funnel_daily`, `mart_rr_cohort_weekly`, `mart_rr_crm_targets_daily` |
+| QA | 품질 기준 통과 여부를 실행 조건으로 적용 | `quality_check_runs` |
+| EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | CSV 3종 + summary TXT |
 
 ---
 
-## Architecture Diagram
+## Architecture
 
 ![Pipeline Architecture](docs/assets/pipeline_architecture.svg)
 
 ---
 
-## Dataset (RAW)
+## Dataset
+
+이 데이터는 clickstream 이벤트가 풍부해 세션화·퍼널·코호트·CRM 과정을 end-to-end로 검증하기 좋습니다.  
+공개 데이터라 같은 파이프라인과 같은 지표를 재현 가능한 형태로 공유하기 적합합니다.
 
 - 출처: Kaggle RetailRocket eCommerce Dataset  
   https://www.kaggle.com/datasets/retailrocket/ecommerce-dataset
@@ -102,88 +92,47 @@ logs/reports/rr_pipeline_summary_2015-09-18.txt
 - `category_tree.csv` — `categoryid, parentid`
 - `item_properties_part1.csv`, `item_properties_part2.csv` — `timestamp, itemid, property, value`
 
-데이터 규모 (로컬 기준):
+데이터 규모(로컬 기준):
 - `events.csv`: 2,756,101행 (header 제외)
 - `category_tree.csv`: 1,669행
 - `item_properties_part1.csv`: 10,999,999행
 - `item_properties_part2.csv`: 9,275,903행
 
-해석 유의점:
-- 데이터는 익명화/해시 처리되어 있어 텍스트 의미 해석보다 행동 로그 구조(세션/퍼널/전환) 분석에 적합합니다.
-
 ---
 
-## Data Modeling (레이어별 근거)
+## Modeling (요약/설계 의도)
 
-### STAGING
-- 리스크: 원본(ms timestamp, 문자열 이벤트) 기반 분석 시 변환 로직이 팀/쿼리마다 달라질 수 있음
-- 대응: 변환 로직을 STAGING에 집중해 하위 레이어 재현성을 확보
-- 산출:
-  - `stg_rr_events`: `event_type` 정규화 + `timestamp_ms → event_ts/event_date`
-  - `stg_rr_item_snapshot`: `categoryid`, `available` 최신값 스냅샷
-  - `stg_rr_category_dim`: 재귀 CTE 기반 카테고리 트리
+- **STAGING**
+  - `event_type` 정규화, `timestamp_ms`를 `event_ts/event_date`로 변환
+  - 아이템 최신 속성(`categoryid`, `available`) 스냅샷 구성
+  - 카테고리 트리를 재귀 CTE로 평탄화
 
-### MART
-- 리스크: 세션 단위/행동 단위가 불안정하면 KPI 해석이 흔들림
-- 대응: dim/fact 분리 + 명시적 sessionization 룰 고정
-- 산출:
+- **MART (분석용 fact/dim + 세션화)**
   - Dimensions: `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`
   - Facts: `fact_rr_events`, `fact_rr_sessions`
+  - 세션 규칙: 동일 `visitor_id` 첫 이벤트 / 날짜 변경 / 이전 이벤트 대비 30분 초과 inactivity
 
-Sessionization Rule:
-1. 동일 `visitor_id` 기준 첫 이벤트
-2. 날짜 변경
-3. 이전 이벤트 대비 30분 초과 inactivity
-
-### KPI
-- 리스크: 지표 정의가 SQL 곳곳에 흩어지면 변경 영향 추적이 어려움
-- 대응: KPI 레이어를 분리해 정의의 단일 책임 지점 확보
-- 산출:
+- **KPI**
   - `mart_rr_funnel_daily`
   - `mart_rr_funnel_category_daily`
   - `mart_rr_cohort_weekly`
   - `mart_rr_crm_targets_daily`
 
-### QA
-- 리스크: 배치 success만으로는 지표 신뢰를 보장할 수 없음
-- 대응: 품질 게이트 내장
-- 체크:
+- **QA**
   - 이벤트 도메인
   - transaction 무결성
-  - null 체크(핵심 키)
+  - 핵심 키 null
   - 핵심 테이블 row count sanity
   - KPI 범위 sanity (CVR 0~1)
 
-### EXPORT
-- 리스크: 분석 결과가 전달물로 끝나지 않으면 실행 단계와 단절됨
-- 대응: CSV/TXT export를 표준 산출물로 고정
+- **EXPORT**
+  - `rr_funnel_daily_{date}.csv`
+  - `rr_cohort_weekly_{date}.csv`
+  - `rr_crm_targets_{date}.csv`
+  - `rr_pipeline_summary_{date}.txt`
 
 ---
 
-## DAG 운영 설정
+## Project Page
 
-- DAG ID: `rr_funnel_daily`
-- Schedule: `0 9 * * *` (Asia/Seoul)
-- `catchup=False`
-- `max_active_runs=1`
-- 수동 백필: `dag_run.conf.target_date` 지원
-
----
-
-## Project Page (GitHub Pages)
-
-- 문서 랜딩: `https://<your-github-username>.github.io/da-airflow-retailrocket/`
-- 문서 설정/위치: `docs-site/mkdocs.yml`, `docs-site/docs/`
-- 배포 전 확인: `Settings > Pages > Build and deployment > Source = GitHub Actions`
-
----
-
-## Troubleshooting (핵심 1건)
-
-문제:
-- Airflow 3 환경에서 Jinja 템플릿 `in_timezone` 호출 시 타입 불일치 오류
-
-해결:
-- datetime 호환 템플릿으로 수정
-- `dag_run.conf.target_date` 우선 처리
-- `catchup=False`로 불필요한 대량 자동 백필 방지
+https://<your-github-username>.github.io/da-airflow-retailrocket/
