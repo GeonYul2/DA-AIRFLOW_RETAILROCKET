@@ -71,6 +71,17 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 - `item_properties_part1.csv`: 10,999,999행
 - `item_properties_part2.csv`: 9,275,903행
 
+EDA 요약(클릭):
+- [docs/retailrocket_eda.md](docs/retailrocket_eda.md)
+
+핵심 관찰값:
+- 이벤트 구성: `view` 96.67% / `addtocart` 2.52% / `transaction` 0.81%
+- 퍼널 관찰(이벤트 기준): `addtocart/view=0.0260`, `transaction/addtocart=0.3239`
+- 카테고리 트리: 노드 1,669개, 루트 25개, 리프 1,307개
+
+EDA 재생성:
+- `python3 scripts/profile_retailrocket_eda.py`
+
 ---
 
 ## Modeling (요약/설계 의도)
