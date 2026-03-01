@@ -27,6 +27,32 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 - 실행 1회마다 동일 포맷의 산출물이 자동 생성됩니다.
 - KPI 테이블과 품질 검증 쿼리를 분리해 원인 추적이 쉽도록 구성했습니다.
 
+## Deliverables (샘플: 2015-06-16)
+
+| 산출물 | 샘플 건수/길이 | 주요 사용 주체 | 용도 |
+|---|---:|---|---|
+| `rr_funnel_daily_2015-06-16.csv` | 1행 | BA/그로스 | 일자 퍼널·CVR 해석 |
+| `rr_cohort_weekly_2015-06-16.csv` | 6행 | BA/PM | 주차별 유지율 확인 |
+| `rr_crm_targets_2015-06-16.csv` | 312행 | 마케팅/운영 | CRM 실행 타겟 전달 |
+| `rr_pipeline_summary_2015-06-16.txt` | 20줄 | DQA/운영 | 실행 결과·품질 요약 검수 |
+
+CRM 타겟 샘플 분포(2015-06-16):
+- `cart_abandoner_today`: 80
+- `high_intent_viewer_7d_no_cart`: 115
+- `repeat_buyer`: 117
+
+QA 증적(요약 파일 기준):
+- `001_domain_checks.sql=PASS`
+- `002_transaction_integrity.sql=PASS`
+- `003_null_checks.sql=PASS`
+- `004_rowcount_sanity.sql=PASS`
+- `005_kpi_sanity.sql=PASS`
+
+숫자 → 해석 → 액션(샘플):
+- `visitors=4,379`, `sessions=4,540` → 유입 대비 세션 단위 반응 확인 → 세션 기준 유지 하에 캠페인 비교
+- `cvr_session_to_purchase=0.0134` → 세션 대비 구매 전환 낮음 → 카트 전환 구간 중심 개선 과제 설정
+- CRM 타겟 312명 추출 → 세그먼트별 액션 대상 명확 → 실행 리스트로 즉시 전달
+
 ## Who this helps
 - **BA/그로스**: 캠페인 성과 해석 전에 지표 정의와 세션 기준을 먼저 확인할 수 있습니다.
 - **DQA/운영**: 배치 성공 여부가 아니라 KPI 신뢰 기준으로 파이프라인을 운영할 수 있습니다.
@@ -140,9 +166,10 @@ docs/samples/outputs/rr_pipeline_summary_2015-06-16.txt
 ```
 
 - 런타임 기본 출력 경로: `logs/reports/`
+- Pages 배포 방식: Deploy from a branch (`docs/`)
 
 ---
 
 ## Project Page
 
-https://<your-github-username>.github.io/da-airflow-retailrocket/
+https://geonyul2.github.io/DA-AIRFLOW_RETAILROCKET/
