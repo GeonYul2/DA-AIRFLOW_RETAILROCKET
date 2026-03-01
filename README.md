@@ -49,11 +49,60 @@ EDA 참고:
 | QA | 품질 기준 선반영 | domain / integrity / null / rowcount / KPI range(0~1) 5개 체크를 실행 조건으로 적용 |
 | EXPORT | 실행 가능한 전달물 생성 | QA 통과 시에만 CSV 3종 + summary TXT 1종을 고정 파일명 패턴으로 생성 |
 
-고정한 기준:
+핵심 고정 기준(요약):
 - 세션: 30분 inactivity + 날짜 변경
 - 지표: 분자/분모 정의 고정
 - 품질: QA 5종 통과 후 export
 - 재현: `target_date` backfill
+
+<details>
+<summary><strong>QA 5종 상세 (무엇을 검사하고, 언제 실패하는가)</strong></summary>
+
+| 체크 | 검사 내용 | 실패 조건 | SQL |
+|---|---|---|---|
+| Domain check | 이벤트 타입이 허용값(`view/addtocart/transaction`)인지 확인 | 허용값 외 이벤트 존재 | [`001_domain_checks.sql`](sql/retailrocket/90_quality/001_domain_checks.sql) |
+| Transaction integrity | `transaction` 이벤트에 `transaction_id`가 있는지 확인 | `transaction_id` NULL 존재 | [`002_transaction_integrity.sql`](sql/retailrocket/90_quality/002_transaction_integrity.sql) |
+| Null checks | 핵심 키(`timestamp_ms`,`visitor_id`,`item_id`,`event_ts`) 결측 확인 | 핵심 키 NULL 존재 | [`003_null_checks.sql`](sql/retailrocket/90_quality/003_null_checks.sql) |
+| Rowcount sanity | 핵심 테이블이 비어있는지 확인 | `stg_rr_events`/`fact_rr_events`/`fact_rr_sessions` 중 0건 존재 | [`004_rowcount_sanity.sql`](sql/retailrocket/90_quality/004_rowcount_sanity.sql) |
+| KPI sanity | 퍼널 값 음수 여부, CVR 범위(0~1) 확인 | 음수 값 또는 CVR 범위 이탈 | [`005_kpi_sanity.sql`](sql/retailrocket/90_quality/005_kpi_sanity.sql) |
+
+</details>
+
+<details>
+<summary><strong>KPI/CRM 정의 상세 (분자·분모와 세그먼트 기준)</strong></summary>
+
+### Funnel (일 단위)
+- `cvr_session_to_purchase = sessions_with_purchase / sessions`
+- `cvr_view_to_cart = sessions_with_cart / sessions_with_view`
+- `cvr_cart_to_purchase = sessions_with_purchase / sessions_with_cart`
+- SQL: [`001_mart_rr_funnel_daily.sql`](sql/retailrocket/30_kpi/001_mart_rr_funnel_daily.sql)
+
+### Cohort (주 단위)
+- 코호트 기준: visitor의 첫 구매 주(`cohort_week`)
+- 유지율: `retention_rate = active_visitors / cohort_size`
+- SQL: [`003_mart_rr_cohort_weekly.sql`](sql/retailrocket/30_kpi/003_mart_rr_cohort_weekly.sql)
+
+### CRM Targets (일 단위 세그먼트)
+- `cart_abandoner_today`: 당일 addtocart는 있었지만 당일 transaction이 없는 visitor
+- `high_intent_viewer_7d_no_cart`: 최근 7일 view 20회 이상, addtocart/transaction 없는 visitor
+- `repeat_buyer`: 누적 transaction_id 2건 이상인 visitor
+- SQL: [`004_mart_rr_crm_targets_daily.sql`](sql/retailrocket/30_kpi/004_mart_rr_crm_targets_daily.sql)
+
+</details>
+
+<details>
+<summary><strong>DATA MART/세션화 상세 (세션이 어떻게 만들어지는가)</strong></summary>
+
+세션 분리는 visitor 단위로 정렬 후 아래 조건에서 새 세션을 시작합니다.
+1. 해당 visitor의 첫 이벤트
+2. 이벤트 날짜 변경
+3. 이전 이벤트 대비 30분 초과 inactivity
+
+세션 ID는 `visitor_id-session_index`로 생성합니다.
+- 이벤트 세션화 SQL: [`010_fact_rr_events.sql`](sql/retailrocket/20_mart/010_fact_rr_events.sql)
+- 세션 집계 SQL: [`020_fact_rr_sessions.sql`](sql/retailrocket/20_mart/020_fact_rr_sessions.sql)
+
+</details>
 
 ## 4) 결과와 산출물
 대표 재현 실행: `target_date=2015-06-16`
