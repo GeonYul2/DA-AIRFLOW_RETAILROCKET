@@ -46,7 +46,7 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 | DATA MART | 분석 단위(fact/dim, 세션)를 고정 | 분석 테이블 5종 구성: `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`, `fact_rr_events`, `fact_rr_sessions` |
 | KPI | 퍼널·코호트·CRM 정의를 계산 테이블로 분리 | KPI 테이블 4종 계산: `mart_rr_funnel_daily`, `mart_rr_funnel_category_daily`, `mart_rr_cohort_weekly`, `mart_rr_crm_targets_daily` |
 | QA | 품질 기준 통과 여부를 실행 조건으로 적용 | 품질 결과 저장: `quality_check_runs` (`check_name`, `status`, `result_row_count`) |
-| EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | 리포트 파일 4종 생성: `logs/reports/rr_funnel_daily_*.csv`, `logs/reports/rr_cohort_weekly_*.csv`, `logs/reports/rr_crm_targets_*.csv`, `logs/reports/rr_pipeline_summary_*.txt` |
+| EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | 런타임 출력: `logs/reports/rr_*.{csv,txt}` / 포트폴리오 샘플: `docs/samples/outputs/` |
 
 ---
 
@@ -133,11 +133,13 @@ EDA 재생성(스크립트):
 ## Outputs
 
 ```text
-logs/reports/rr_funnel_daily_2015-09-18.csv
-logs/reports/rr_cohort_weekly_2015-09-18.csv
-logs/reports/rr_crm_targets_2015-09-18.csv
-logs/reports/rr_pipeline_summary_2015-09-18.txt
+docs/samples/outputs/rr_funnel_daily_2015-09-18.csv
+docs/samples/outputs/rr_cohort_weekly_2015-09-18.csv
+docs/samples/outputs/rr_crm_targets_2015-09-18.csv
+docs/samples/outputs/rr_pipeline_summary_2015-09-18.txt
 ```
+
+- 런타임 기본 출력 경로: `logs/reports/`
 
 ---
 
