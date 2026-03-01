@@ -1,0 +1,313 @@
+kpi_date,visitor_id,segment_name,evidence
+2015-06-16,15316,cart_abandoner_today,"last_cart_ts=2015-06-16 03:57:46.735, cart_events=1"
+2015-06-16,56238,cart_abandoner_today,"last_cart_ts=2015-06-16 00:59:52.168, cart_events=1"
+2015-06-16,61228,cart_abandoner_today,"last_cart_ts=2015-06-16 04:54:31.317, cart_events=1"
+2015-06-16,116616,cart_abandoner_today,"last_cart_ts=2015-06-16 01:35:34.243, cart_events=1"
+2015-06-16,120311,cart_abandoner_today,"last_cart_ts=2015-06-16 03:30:10.044, cart_events=1"
+2015-06-16,121077,cart_abandoner_today,"last_cart_ts=2015-06-16 02:09:01.199, cart_events=2"
+2015-06-16,147145,cart_abandoner_today,"last_cart_ts=2015-06-16 00:26:24.461, cart_events=1"
+2015-06-16,167815,cart_abandoner_today,"last_cart_ts=2015-06-16 03:03:00.879, cart_events=1"
+2015-06-16,183983,cart_abandoner_today,"last_cart_ts=2015-06-16 01:46:04.987, cart_events=2"
+2015-06-16,184011,cart_abandoner_today,"last_cart_ts=2015-06-16 01:42:16.982, cart_events=1"
+2015-06-16,188670,cart_abandoner_today,"last_cart_ts=2015-06-16 00:36:49.788, cart_events=1"
+2015-06-16,204263,cart_abandoner_today,"last_cart_ts=2015-06-16 03:58:41.135, cart_events=1"
+2015-06-16,206371,cart_abandoner_today,"last_cart_ts=2015-06-16 00:53:26.502, cart_events=1"
+2015-06-16,212223,cart_abandoner_today,"last_cart_ts=2015-06-16 00:00:54.668, cart_events=1"
+2015-06-16,229190,cart_abandoner_today,"last_cart_ts=2015-06-16 00:27:55.95, cart_events=1"
+2015-06-16,231554,cart_abandoner_today,"last_cart_ts=2015-06-16 03:40:31.492, cart_events=1"
+2015-06-16,255859,cart_abandoner_today,"last_cart_ts=2015-06-16 02:39:57.689, cart_events=4"
+2015-06-16,264346,cart_abandoner_today,"last_cart_ts=2015-06-16 03:50:08.277, cart_events=1"
+2015-06-16,294534,cart_abandoner_today,"last_cart_ts=2015-06-16 01:41:28.253, cart_events=1"
+2015-06-16,321194,cart_abandoner_today,"last_cart_ts=2015-06-16 02:49:24.806, cart_events=1"
+2015-06-16,331322,cart_abandoner_today,"last_cart_ts=2015-06-16 04:56:43.494, cart_events=2"
+2015-06-16,334322,cart_abandoner_today,"last_cart_ts=2015-06-16 05:23:50.921, cart_events=1"
+2015-06-16,334396,cart_abandoner_today,"last_cart_ts=2015-06-16 05:13:49.043, cart_events=2"
+2015-06-16,340467,cart_abandoner_today,"last_cart_ts=2015-06-16 00:25:57.706, cart_events=1"
+2015-06-16,349536,cart_abandoner_today,"last_cart_ts=2015-06-16 00:48:31.784, cart_events=1"
+2015-06-16,402541,cart_abandoner_today,"last_cart_ts=2015-06-16 02:22:26.573, cart_events=1"
+2015-06-16,440183,cart_abandoner_today,"last_cart_ts=2015-06-16 04:34:46.418, cart_events=1"
+2015-06-16,454702,cart_abandoner_today,"last_cart_ts=2015-06-16 05:55:14.514, cart_events=3"
+2015-06-16,483205,cart_abandoner_today,"last_cart_ts=2015-06-16 01:38:03.523, cart_events=1"
+2015-06-16,486566,cart_abandoner_today,"last_cart_ts=2015-06-16 00:19:36.027, cart_events=1"
+2015-06-16,501451,cart_abandoner_today,"last_cart_ts=2015-06-16 05:34:08.571, cart_events=1"
+2015-06-16,513529,cart_abandoner_today,"last_cart_ts=2015-06-16 01:04:36.185, cart_events=1"
+2015-06-16,551365,cart_abandoner_today,"last_cart_ts=2015-06-16 04:28:13.514, cart_events=1"
+2015-06-16,566009,cart_abandoner_today,"last_cart_ts=2015-06-16 01:08:19.511, cart_events=1"
+2015-06-16,570847,cart_abandoner_today,"last_cart_ts=2015-06-16 05:58:15.784, cart_events=1"
+2015-06-16,576994,cart_abandoner_today,"last_cart_ts=2015-06-16 01:30:14.009, cart_events=1"
+2015-06-16,584485,cart_abandoner_today,"last_cart_ts=2015-06-16 04:33:20.007, cart_events=1"
+2015-06-16,592793,cart_abandoner_today,"last_cart_ts=2015-06-16 03:44:53.448, cart_events=1"
+2015-06-16,607495,cart_abandoner_today,"last_cart_ts=2015-06-16 01:25:59.187, cart_events=1"
+2015-06-16,609710,cart_abandoner_today,"last_cart_ts=2015-06-16 00:05:43.127, cart_events=1"
+2015-06-16,629206,cart_abandoner_today,"last_cart_ts=2015-06-16 05:38:22.608, cart_events=1"
+2015-06-16,644102,cart_abandoner_today,"last_cart_ts=2015-06-16 05:59:24.824, cart_events=2"
+2015-06-16,760912,cart_abandoner_today,"last_cart_ts=2015-06-16 05:10:02.541, cart_events=1"
+2015-06-16,782853,cart_abandoner_today,"last_cart_ts=2015-06-16 04:26:11.534, cart_events=2"
+2015-06-16,786149,cart_abandoner_today,"last_cart_ts=2015-06-16 03:30:25.014, cart_events=2"
+2015-06-16,789011,cart_abandoner_today,"last_cart_ts=2015-06-16 04:16:18.29, cart_events=1"
+2015-06-16,803049,cart_abandoner_today,"last_cart_ts=2015-06-16 03:50:49.318, cart_events=1"
+2015-06-16,809029,cart_abandoner_today,"last_cart_ts=2015-06-16 02:48:51.815, cart_events=1"
+2015-06-16,830235,cart_abandoner_today,"last_cart_ts=2015-06-16 03:07:49.969, cart_events=1"
+2015-06-16,859781,cart_abandoner_today,"last_cart_ts=2015-06-16 02:48:47.565, cart_events=1"
+2015-06-16,865765,cart_abandoner_today,"last_cart_ts=2015-06-16 00:48:12.72, cart_events=1"
+2015-06-16,903822,cart_abandoner_today,"last_cart_ts=2015-06-16 01:41:30.096, cart_events=2"
+2015-06-16,905827,cart_abandoner_today,"last_cart_ts=2015-06-16 03:31:12.404, cart_events=1"
+2015-06-16,921093,cart_abandoner_today,"last_cart_ts=2015-06-16 05:16:44.822, cart_events=1"
+2015-06-16,941660,cart_abandoner_today,"last_cart_ts=2015-06-16 02:44:23.913, cart_events=1"
+2015-06-16,960024,cart_abandoner_today,"last_cart_ts=2015-06-16 04:00:25.998, cart_events=1"
+2015-06-16,966564,cart_abandoner_today,"last_cart_ts=2015-06-16 00:02:22.192, cart_events=1"
+2015-06-16,976758,cart_abandoner_today,"last_cart_ts=2015-06-16 05:20:22.642, cart_events=2"
+2015-06-16,981402,cart_abandoner_today,"last_cart_ts=2015-06-16 04:43:50.022, cart_events=2"
+2015-06-16,991047,cart_abandoner_today,"last_cart_ts=2015-06-16 04:39:03.877, cart_events=2"
+2015-06-16,1037173,cart_abandoner_today,"last_cart_ts=2015-06-16 04:41:42.962, cart_events=2"
+2015-06-16,1038272,cart_abandoner_today,"last_cart_ts=2015-06-16 05:21:44.112, cart_events=1"
+2015-06-16,1051034,cart_abandoner_today,"last_cart_ts=2015-06-16 03:09:52.779, cart_events=1"
+2015-06-16,1058117,cart_abandoner_today,"last_cart_ts=2015-06-16 02:13:07.149, cart_events=1"
+2015-06-16,1068170,cart_abandoner_today,"last_cart_ts=2015-06-16 04:49:08.741, cart_events=1"
+2015-06-16,1143525,cart_abandoner_today,"last_cart_ts=2015-06-16 01:50:34.475, cart_events=7"
+2015-06-16,1150086,cart_abandoner_today,"last_cart_ts=2015-06-16 00:26:11.502, cart_events=2"
+2015-06-16,1196932,cart_abandoner_today,"last_cart_ts=2015-06-16 02:17:45.1, cart_events=1"
+2015-06-16,1209313,cart_abandoner_today,"last_cart_ts=2015-06-16 04:50:56, cart_events=11"
+2015-06-16,1220885,cart_abandoner_today,"last_cart_ts=2015-06-16 02:43:35.147, cart_events=1"
+2015-06-16,1224304,cart_abandoner_today,"last_cart_ts=2015-06-16 00:27:12.269, cart_events=2"
+2015-06-16,1227408,cart_abandoner_today,"last_cart_ts=2015-06-16 04:54:54.016, cart_events=1"
+2015-06-16,1229890,cart_abandoner_today,"last_cart_ts=2015-06-16 04:46:29.05, cart_events=1"
+2015-06-16,1243259,cart_abandoner_today,"last_cart_ts=2015-06-16 05:14:11.482, cart_events=1"
+2015-06-16,1280760,cart_abandoner_today,"last_cart_ts=2015-06-16 03:22:31.112, cart_events=1"
+2015-06-16,1288868,cart_abandoner_today,"last_cart_ts=2015-06-16 02:09:02.585, cart_events=1"
+2015-06-16,1328802,cart_abandoner_today,"last_cart_ts=2015-06-16 03:57:41.081, cart_events=1"
+2015-06-16,1335094,cart_abandoner_today,"last_cart_ts=2015-06-16 03:04:49.928, cart_events=2"
+2015-06-16,1340851,cart_abandoner_today,"last_cart_ts=2015-06-16 00:37:05.179, cart_events=1"
+2015-06-16,1396129,cart_abandoner_today,"last_cart_ts=2015-06-16 04:37:27.839, cart_events=1"
+2015-06-16,38015,high_intent_viewer_7d_no_cart,view_events_7d=28
+2015-06-16,42470,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,54469,high_intent_viewer_7d_no_cart,view_events_7d=42
+2015-06-16,72297,high_intent_viewer_7d_no_cart,view_events_7d=38
+2015-06-16,77390,high_intent_viewer_7d_no_cart,view_events_7d=65
+2015-06-16,78440,high_intent_viewer_7d_no_cart,view_events_7d=20
+2015-06-16,95405,high_intent_viewer_7d_no_cart,view_events_7d=25
+2015-06-16,126404,high_intent_viewer_7d_no_cart,view_events_7d=28
+2015-06-16,138604,high_intent_viewer_7d_no_cart,view_events_7d=76
+2015-06-16,152635,high_intent_viewer_7d_no_cart,view_events_7d=29
+2015-06-16,160332,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,169586,high_intent_viewer_7d_no_cart,view_events_7d=50
+2015-06-16,186355,high_intent_viewer_7d_no_cart,view_events_7d=22
+2015-06-16,187544,high_intent_viewer_7d_no_cart,view_events_7d=24
+2015-06-16,203168,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,205811,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,211691,high_intent_viewer_7d_no_cart,view_events_7d=22
+2015-06-16,229157,high_intent_viewer_7d_no_cart,view_events_7d=52
+2015-06-16,234164,high_intent_viewer_7d_no_cart,view_events_7d=28
+2015-06-16,247972,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,259405,high_intent_viewer_7d_no_cart,view_events_7d=43
+2015-06-16,283414,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,288040,high_intent_viewer_7d_no_cart,view_events_7d=22
+2015-06-16,317355,high_intent_viewer_7d_no_cart,view_events_7d=30
+2015-06-16,319208,high_intent_viewer_7d_no_cart,view_events_7d=28
+2015-06-16,340329,high_intent_viewer_7d_no_cart,view_events_7d=20
+2015-06-16,346821,high_intent_viewer_7d_no_cart,view_events_7d=20
+2015-06-16,378568,high_intent_viewer_7d_no_cart,view_events_7d=24
+2015-06-16,388556,high_intent_viewer_7d_no_cart,view_events_7d=57
+2015-06-16,396524,high_intent_viewer_7d_no_cart,view_events_7d=32
+2015-06-16,404783,high_intent_viewer_7d_no_cart,view_events_7d=32
+2015-06-16,406115,high_intent_viewer_7d_no_cart,view_events_7d=22
+2015-06-16,409424,high_intent_viewer_7d_no_cart,view_events_7d=26
+2015-06-16,431575,high_intent_viewer_7d_no_cart,view_events_7d=24
+2015-06-16,433583,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,462255,high_intent_viewer_7d_no_cart,view_events_7d=41
+2015-06-16,463993,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,468309,high_intent_viewer_7d_no_cart,view_events_7d=35
+2015-06-16,479732,high_intent_viewer_7d_no_cart,view_events_7d=57
+2015-06-16,500461,high_intent_viewer_7d_no_cart,view_events_7d=33
+2015-06-16,506121,high_intent_viewer_7d_no_cart,view_events_7d=43
+2015-06-16,510694,high_intent_viewer_7d_no_cart,view_events_7d=32
+2015-06-16,521443,high_intent_viewer_7d_no_cart,view_events_7d=24
+2015-06-16,527307,high_intent_viewer_7d_no_cart,view_events_7d=144
+2015-06-16,530375,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,537151,high_intent_viewer_7d_no_cart,view_events_7d=26
+2015-06-16,538006,high_intent_viewer_7d_no_cart,view_events_7d=36
+2015-06-16,546059,high_intent_viewer_7d_no_cart,view_events_7d=22
+2015-06-16,582600,high_intent_viewer_7d_no_cart,view_events_7d=34
+2015-06-16,592510,high_intent_viewer_7d_no_cart,view_events_7d=26
+2015-06-16,592512,high_intent_viewer_7d_no_cart,view_events_7d=22
+2015-06-16,592561,high_intent_viewer_7d_no_cart,view_events_7d=25
+2015-06-16,620048,high_intent_viewer_7d_no_cart,view_events_7d=20
+2015-06-16,622616,high_intent_viewer_7d_no_cart,view_events_7d=26
+2015-06-16,623304,high_intent_viewer_7d_no_cart,view_events_7d=126
+2015-06-16,634327,high_intent_viewer_7d_no_cart,view_events_7d=24
+2015-06-16,638482,high_intent_viewer_7d_no_cart,view_events_7d=55
+2015-06-16,662648,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,664763,high_intent_viewer_7d_no_cart,view_events_7d=25
+2015-06-16,670796,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,673572,high_intent_viewer_7d_no_cart,view_events_7d=27
+2015-06-16,690114,high_intent_viewer_7d_no_cart,view_events_7d=28
+2015-06-16,732249,high_intent_viewer_7d_no_cart,view_events_7d=37
+2015-06-16,734633,high_intent_viewer_7d_no_cart,view_events_7d=20
+2015-06-16,739459,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,742772,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,758500,high_intent_viewer_7d_no_cart,view_events_7d=32
+2015-06-16,760430,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,773063,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,773627,high_intent_viewer_7d_no_cart,view_events_7d=32
+2015-06-16,778227,high_intent_viewer_7d_no_cart,view_events_7d=30
+2015-06-16,789933,high_intent_viewer_7d_no_cart,view_events_7d=70
+2015-06-16,801810,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,802009,high_intent_viewer_7d_no_cart,view_events_7d=37
+2015-06-16,810776,high_intent_viewer_7d_no_cart,view_events_7d=26
+2015-06-16,816229,high_intent_viewer_7d_no_cart,view_events_7d=134
+2015-06-16,829859,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,844618,high_intent_viewer_7d_no_cart,view_events_7d=61
+2015-06-16,847832,high_intent_viewer_7d_no_cart,view_events_7d=20
+2015-06-16,862196,high_intent_viewer_7d_no_cart,view_events_7d=24
+2015-06-16,885096,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,924268,high_intent_viewer_7d_no_cart,view_events_7d=73
+2015-06-16,951230,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,953897,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,981298,high_intent_viewer_7d_no_cart,view_events_7d=24
+2015-06-16,983447,high_intent_viewer_7d_no_cart,view_events_7d=37
+2015-06-16,998021,high_intent_viewer_7d_no_cart,view_events_7d=27
+2015-06-16,1000294,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,1014518,high_intent_viewer_7d_no_cart,view_events_7d=27
+2015-06-16,1025500,high_intent_viewer_7d_no_cart,view_events_7d=25
+2015-06-16,1049657,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,1052034,high_intent_viewer_7d_no_cart,view_events_7d=24
+2015-06-16,1063845,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,1073182,high_intent_viewer_7d_no_cart,view_events_7d=47
+2015-06-16,1094964,high_intent_viewer_7d_no_cart,view_events_7d=25
+2015-06-16,1116399,high_intent_viewer_7d_no_cart,view_events_7d=24
+2015-06-16,1119917,high_intent_viewer_7d_no_cart,view_events_7d=23
+2015-06-16,1126569,high_intent_viewer_7d_no_cart,view_events_7d=44
+2015-06-16,1137280,high_intent_viewer_7d_no_cart,view_events_7d=38
+2015-06-16,1138399,high_intent_viewer_7d_no_cart,view_events_7d=30
+2015-06-16,1147049,high_intent_viewer_7d_no_cart,view_events_7d=20
+2015-06-16,1148887,high_intent_viewer_7d_no_cart,view_events_7d=28
+2015-06-16,1157071,high_intent_viewer_7d_no_cart,view_events_7d=48
+2015-06-16,1163546,high_intent_viewer_7d_no_cart,view_events_7d=25
+2015-06-16,1163816,high_intent_viewer_7d_no_cart,view_events_7d=52
+2015-06-16,1195428,high_intent_viewer_7d_no_cart,view_events_7d=38
+2015-06-16,1197848,high_intent_viewer_7d_no_cart,view_events_7d=25
+2015-06-16,1253277,high_intent_viewer_7d_no_cart,view_events_7d=25
+2015-06-16,1255217,high_intent_viewer_7d_no_cart,view_events_7d=105
+2015-06-16,1265598,high_intent_viewer_7d_no_cart,view_events_7d=21
+2015-06-16,1292894,high_intent_viewer_7d_no_cart,view_events_7d=22
+2015-06-16,1296963,high_intent_viewer_7d_no_cart,view_events_7d=25
+2015-06-16,1298909,high_intent_viewer_7d_no_cart,view_events_7d=29
+2015-06-16,1357576,high_intent_viewer_7d_no_cart,view_events_7d=35
+2015-06-16,1392092,high_intent_viewer_7d_no_cart,view_events_7d=44
+2015-06-16,32160,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-05 19:11:50.386"
+2015-06-16,34598,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-07 07:50:16.25"
+2015-06-16,38015,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-05 18:50:23.235"
+2015-06-16,50921,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-03 17:05:24.42"
+2015-06-16,57905,repeat_buyer,"tx_cnt=10, last_purchase_ts=2015-06-03 22:21:21.16"
+2015-06-16,58024,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-11 02:05:13.067"
+2015-06-16,67712,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-10 17:35:10.157"
+2015-06-16,76757,repeat_buyer,"tx_cnt=22, last_purchase_ts=2015-06-11 23:22:35.514"
+2015-06-16,79452,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-15 07:06:38.232"
+2015-06-16,79566,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-11 00:52:59.184"
+2015-06-16,85734,repeat_buyer,"tx_cnt=7, last_purchase_ts=2015-06-11 23:35:04.132"
+2015-06-16,101175,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-15 15:50:17.008"
+2015-06-16,138131,repeat_buyer,"tx_cnt=45, last_purchase_ts=2015-06-15 02:21:52.553"
+2015-06-16,144274,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-12 05:20:03.83"
+2015-06-16,146698,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-11 00:04:43.909"
+2015-06-16,157419,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-12 06:10:45.842"
+2015-06-16,163561,repeat_buyer,"tx_cnt=13, last_purchase_ts=2015-06-04 02:33:17.559"
+2015-06-16,189240,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-04 19:37:40.593"
+2015-06-16,197686,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-14 15:50:24.945"
+2015-06-16,198153,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-11 19:10:52.408"
+2015-06-16,211574,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-12 16:16:33.966"
+2015-06-16,213145,repeat_buyer,"tx_cnt=16, last_purchase_ts=2015-06-08 22:35:36.798"
+2015-06-16,221099,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-13 23:55:32.876"
+2015-06-16,263391,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-03 02:35:53.359"
+2015-06-16,286616,repeat_buyer,"tx_cnt=14, last_purchase_ts=2015-06-06 23:13:21.033"
+2015-06-16,291283,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-04 17:24:25.281"
+2015-06-16,322407,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-01 17:35:03.843"
+2015-06-16,325687,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-12 18:03:57.903"
+2015-06-16,343137,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-11 00:38:45.722"
+2015-06-16,345276,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-14 01:47:12.867"
+2015-06-16,350566,repeat_buyer,"tx_cnt=8, last_purchase_ts=2015-06-06 03:03:48.975"
+2015-06-16,354554,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-14 20:51:50.403"
+2015-06-16,358516,repeat_buyer,"tx_cnt=12, last_purchase_ts=2015-06-09 02:50:28.083"
+2015-06-16,361387,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-02 06:21:23.071"
+2015-06-16,371604,repeat_buyer,"tx_cnt=30, last_purchase_ts=2015-06-16 03:05:27.377"
+2015-06-16,374933,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-16 02:53:34.828"
+2015-06-16,396761,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-08 17:44:18.714"
+2015-06-16,404403,repeat_buyer,"tx_cnt=6, last_purchase_ts=2015-06-01 23:51:49.062"
+2015-06-16,407633,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-08 20:44:39.627"
+2015-06-16,422894,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-10 22:00:02.98"
+2015-06-16,429213,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-05 14:51:28.768"
+2015-06-16,434180,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-09 07:27:30.884"
+2015-06-16,438441,repeat_buyer,"tx_cnt=30, last_purchase_ts=2015-06-04 23:48:19.004"
+2015-06-16,502189,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-11 18:53:53.265"
+2015-06-16,503857,repeat_buyer,"tx_cnt=19, last_purchase_ts=2015-06-05 02:04:34.276"
+2015-06-16,516261,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-15 20:24:56.97"
+2015-06-16,527277,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-04 20:08:19.72"
+2015-06-16,530033,repeat_buyer,"tx_cnt=5, last_purchase_ts=2015-06-05 03:04:22.589"
+2015-06-16,561611,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-04 15:39:09.657"
+2015-06-16,592247,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-16 01:30:34.841"
+2015-06-16,608628,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-01 23:01:58.976"
+2015-06-16,621474,repeat_buyer,"tx_cnt=6, last_purchase_ts=2015-06-07 00:17:45.55"
+2015-06-16,625795,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-04 18:33:24.554"
+2015-06-16,633063,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-05 00:03:14.026"
+2015-06-16,690929,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-15 15:31:43.918"
+2015-06-16,696363,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-11 19:04:59.677"
+2015-06-16,701722,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-10 18:31:41.058"
+2015-06-16,731857,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-06 17:53:57.946"
+2015-06-16,748040,repeat_buyer,"tx_cnt=20, last_purchase_ts=2015-06-13 00:03:10.869"
+2015-06-16,780205,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-15 03:26:47.779"
+2015-06-16,792741,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-11 00:21:17.638"
+2015-06-16,796000,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-11 00:01:53.593"
+2015-06-16,805204,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-02 18:51:40.601"
+2015-06-16,807851,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-14 00:08:37.461"
+2015-06-16,813387,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-12 22:19:13.668"
+2015-06-16,820159,repeat_buyer,"tx_cnt=4, last_purchase_ts=2015-06-01 23:53:08.608"
+2015-06-16,824842,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-11 18:56:20.043"
+2015-06-16,841939,repeat_buyer,"tx_cnt=30, last_purchase_ts=2015-06-10 01:09:35.593"
+2015-06-16,858445,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-08 06:11:35.904"
+2015-06-16,892355,repeat_buyer,"tx_cnt=33, last_purchase_ts=2015-06-15 18:13:02.335"
+2015-06-16,899857,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-10 14:40:59.976"
+2015-06-16,903507,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-06 07:28:51.988"
+2015-06-16,905936,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-14 21:30:39.595"
+2015-06-16,906238,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-06 01:01:42.216"
+2015-06-16,913045,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-15 03:28:32.259"
+2015-06-16,929382,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-08 17:46:26.361"
+2015-06-16,932193,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-10 22:44:11.693"
+2015-06-16,939309,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-06 17:18:34.251"
+2015-06-16,939751,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-05 02:55:33.938"
+2015-06-16,941359,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-16 04:12:19.897"
+2015-06-16,959037,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-04 20:32:07.388"
+2015-06-16,960004,repeat_buyer,"tx_cnt=5, last_purchase_ts=2015-06-06 23:16:38.049"
+2015-06-16,1001673,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-01 19:56:25.658"
+2015-06-16,1003058,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-15 20:00:49.656"
+2015-06-16,1029499,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-03 17:40:20.083"
+2015-06-16,1065255,repeat_buyer,"tx_cnt=20, last_purchase_ts=2015-06-15 23:46:35.921"
+2015-06-16,1075423,repeat_buyer,"tx_cnt=12, last_purchase_ts=2015-06-08 02:15:50.838"
+2015-06-16,1093035,repeat_buyer,"tx_cnt=47, last_purchase_ts=2015-06-10 21:44:52.154"
+2015-06-16,1123042,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-15 22:11:40.348"
+2015-06-16,1129560,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-05 18:14:21.239"
+2015-06-16,1134975,repeat_buyer,"tx_cnt=6, last_purchase_ts=2015-06-11 18:52:39.28"
+2015-06-16,1143383,repeat_buyer,"tx_cnt=15, last_purchase_ts=2015-06-14 22:46:24.844"
+2015-06-16,1150086,repeat_buyer,"tx_cnt=30, last_purchase_ts=2015-06-15 23:24:12.172"
+2015-06-16,1161163,repeat_buyer,"tx_cnt=42, last_purchase_ts=2015-06-16 01:56:49.852"
+2015-06-16,1162858,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-02 03:54:52.74"
+2015-06-16,1168431,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-10 22:16:32.808"
+2015-06-16,1190855,repeat_buyer,"tx_cnt=4, last_purchase_ts=2015-06-15 06:59:52.044"
+2015-06-16,1202351,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-07 00:00:19.03"
+2015-06-16,1220556,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-13 02:51:01.164"
+2015-06-16,1236753,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-01 19:42:45.442"
+2015-06-16,1246436,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-11 01:09:21.672"
+2015-06-16,1249058,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-01 20:25:08.987"
+2015-06-16,1254716,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-04 19:16:07.283"
+2015-06-16,1270193,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-12 01:18:56.57"
+2015-06-16,1281446,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-02 02:49:14.8"
+2015-06-16,1284340,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-11 20:37:43.766"
+2015-06-16,1296635,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-07 20:06:26.663"
+2015-06-16,1313304,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-16 04:54:22.988"
+2015-06-16,1317048,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-12 18:29:49.702"
+2015-06-16,1318394,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-02 18:58:14.422"
+2015-06-16,1341202,repeat_buyer,"tx_cnt=8, last_purchase_ts=2015-06-05 23:31:17.932"
+2015-06-16,1356496,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-09 20:16:34.262"
+2015-06-16,1362413,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-04 00:42:40.951"
+2015-06-16,1380494,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-06 12:46:09.627"
+2015-06-16,1381830,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-08 11:40:12.658"
+2015-06-16,1395774,repeat_buyer,"tx_cnt=2, last_purchase_ts=2015-06-08 05:30:48.096"
+2015-06-16,1406087,repeat_buyer,"tx_cnt=3, last_purchase_ts=2015-06-02 11:24:24.771"

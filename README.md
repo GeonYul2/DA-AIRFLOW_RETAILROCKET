@@ -133,10 +133,10 @@ EDA 재생성(스크립트):
 ## Outputs
 
 ```text
-docs/samples/outputs/rr_funnel_daily_2015-09-18.csv
-docs/samples/outputs/rr_cohort_weekly_2015-09-18.csv
-docs/samples/outputs/rr_crm_targets_2015-09-18.csv
-docs/samples/outputs/rr_pipeline_summary_2015-09-18.txt
+docs/samples/outputs/rr_funnel_daily_2015-06-16.csv
+docs/samples/outputs/rr_cohort_weekly_2015-06-16.csv
+docs/samples/outputs/rr_crm_targets_2015-06-16.csv
+docs/samples/outputs/rr_pipeline_summary_2015-06-16.txt
 ```
 
 - 런타임 기본 출력 경로: `logs/reports/`

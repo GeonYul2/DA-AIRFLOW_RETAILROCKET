@@ -1,0 +1,20 @@
+run_id=manual_backfill_2015-06-16
+target_date=2015-06-16
+
+[rr_funnel_daily]
+kpi_date=2015-06-16
+visitors=4379
+sessions=4540
+views=7015
+addtocarts=198
+purchases=67
+cvr_session_to_purchase=0.0134
+cvr_view_to_cart=0.0305
+cvr_cart_to_purchase=0.4420
+
+[quality_checks]
+001_domain_checks.sql=PASS (rows=0)
+002_transaction_integrity.sql=PASS (rows=0)
+003_null_checks.sql=PASS (rows=0)
+004_rowcount_sanity.sql=PASS (rows=0)
+005_kpi_sanity.sql=PASS (rows=0)
