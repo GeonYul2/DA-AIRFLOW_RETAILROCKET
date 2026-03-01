@@ -10,6 +10,9 @@ theme:
 
 nav:
   - Home: index.md
-  - Architecture: architecture.md
-  - Metrics: metrics.md
   - Runbook: runbook.md
+
+markdown_extensions:
+  - toc:
+      permalink: false
+      toc_depth: "2-3"
