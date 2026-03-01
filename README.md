@@ -1,6 +1,6 @@
 # DA-AIRFLOW_RETAILROCKET
 RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Airflow 파이프라인입니다.  
-지표 정의(분자/분모), 세션 기준(30분 비활동 + 날짜 변경), 품질 검증(5종)을 고정해 같은 데이터에서 같은 KPI가 나오도록 설계했습니다.  
+지표 정의·세션 기준·품질 검증을 고정해 같은 데이터에서 같은 KPI가 나오도록 설계했습니다.  
 결과는 일 단위로 계산되어 운영에 바로 쓰는 CSV/TXT로 저장됩니다.
 
 ## 현업 시나리오
@@ -23,9 +23,9 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 - Airflow 실행 시 `target_date`를 지정해 과거 날짜를 다시 계산(재현/검증)할 수 있게 했습니다.
 
 ## 결과
-- DAG 10개 태스크 중 QA 5개를 모두 통과한 경우에만 export 4개 파일이 생성됩니다.
-- 실행 1회마다 CSV 3종 + 요약 TXT 1종, 총 4개 산출물이 자동 생성됩니다.
-- KPI 계산 테이블 4종과 품질 검증 쿼리 5종을 분리해 오류 원인 추적 단계를 명확히 했습니다.
+- QA를 통과한 경우에만 export 파일(CSV 3종 + 요약 TXT)이 생성됩니다.
+- 실행 1회마다 동일 포맷의 산출물이 자동 생성됩니다.
+- KPI 테이블과 품질 검증 쿼리를 분리해 원인 추적이 쉽도록 구성했습니다.
 
 ## Who this helps
 - **BA/그로스**: 캠페인 성과 해석 전에 지표 정의와 세션 기준을 먼저 확인할 수 있습니다.
@@ -71,16 +71,16 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 - `item_properties_part1.csv`: 10,999,999행
 - `item_properties_part2.csv`: 9,275,903행
 
-EDA 요약(클릭):
+EDA 요약 문서(클릭):
 - [docs/retailrocket_eda.md](docs/retailrocket_eda.md)
 
-핵심 관찰값:
+EDA 재생성(스크립트):
+- `python3 scripts/profile_retailrocket_eda.py`
+
+핵심 관찰값(샘플 결과, 로컬 raw 데이터 기준):
 - 이벤트 구성: `view` 96.67% / `addtocart` 2.52% / `transaction` 0.81%
 - 퍼널 관찰(이벤트 기준): `addtocart/view=0.0260`, `transaction/addtocart=0.3239`
 - 카테고리 트리: 노드 1,669개, 루트 25개, 리프 1,307개
-
-EDA 재생성:
-- `python3 scripts/profile_retailrocket_eda.py`
 
 ---
 
