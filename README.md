@@ -31,24 +31,22 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 - **BA/그로스**: 캠페인 성과 해석 전에 지표 정의와 세션 기준을 먼저 확인할 수 있습니다.
 - **DQA/운영**: 배치 성공 여부가 아니라 KPI 신뢰 기준으로 파이프라인을 운영할 수 있습니다.
 
+## Architecture
+
+![Pipeline Architecture](docs/assets/pipeline_architecture.svg)
+
+---
+
 ## Project Overview
 
 | 단계 | 목적 | 설명(산출물) |
 |---|---|---|
 | RAW | 원본 로그를 보존해 추적 기준을 유지 | 원천 3개 테이블 적재: `raw_rr_events`, `raw_rr_item_properties`, `raw_rr_category_tree` |
-| STAGING | 타입/포맷을 통일해 반복 변환 차이를 줄임 | 이벤트 정규화 + 아이템 스냅샷 + 카테고리 트리: `stg_rr_events`, `stg_rr_item_snapshot`, `stg_rr_category_dim` |
-| MART | 분석 단위(fact/dim, 세션)를 고정 | 분석 테이블 5종 구성: `dim_rr_*` 3종, `fact_rr_*` 2종 |
+| STAGING | 타입/포맷을 통일해 반복 변환 차이를 줄임 | 이벤트 정규화 + 아이템 스냅샷 + 카테고리 트리 생성: `stg_rr_events`, `stg_rr_item_snapshot`, `stg_rr_category_dim` |
+| MART | 분석 단위(fact/dim, 세션)를 고정 | 분석 테이블 5종 구성: `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`, `fact_rr_events`, `fact_rr_sessions` |
 | KPI | 퍼널·코호트·CRM 정의를 계산 테이블로 분리 | KPI 테이블 4종 계산: `mart_rr_funnel_daily`, `mart_rr_funnel_category_daily`, `mart_rr_cohort_weekly`, `mart_rr_crm_targets_daily` |
 | QA | 품질 기준 통과 여부를 실행 조건으로 적용 | 품질 결과 저장: `quality_check_runs` (`check_name`, `status`, `result_row_count`) |
-| EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | 리포트 파일 4종 생성: `rr_funnel_daily_*.csv`, `rr_cohort_weekly_*.csv`, `rr_crm_targets_*.csv`, `rr_pipeline_summary_*.txt` |
-
----
-
-## Architecture
-
-[![Pipeline Architecture (click to zoom)](docs/assets/pipeline_architecture.png)](docs/assets/pipeline_architecture.svg)
-
-- 확대 보기(SVG): `docs/assets/pipeline_architecture.svg`
+| EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | 리포트 파일 4종 생성: `logs/reports/rr_funnel_daily_*.csv`, `logs/reports/rr_cohort_weekly_*.csv`, `logs/reports/rr_crm_targets_*.csv`, `logs/reports/rr_pipeline_summary_*.txt` |
 
 ---
 
@@ -88,17 +86,21 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
   - 세션 규칙: 동일 `visitor_id` 첫 이벤트 / 날짜 변경 / 이전 이벤트 대비 30분 초과 비활동
 
 - **KPI**
-  - `mart_rr_funnel_daily`
-  - `mart_rr_funnel_category_daily`
-  - `mart_rr_cohort_weekly`
-  - `mart_rr_crm_targets_daily`
+  - `mart_rr_funnel_daily`: 당일 퍼널 집계(방문자·세션·뷰·장바구니·구매, 3개 CVR)
+  - `mart_rr_funnel_category_daily`: 카테고리별 퍼널 전환
+  - `mart_rr_cohort_weekly`: 코호트 주차별 유지율(`active_visitors / cohort_size`)
+  - `mart_rr_crm_targets_daily`: 실행 타겟 3세그먼트(`cart_abandoner_today`, `high_intent_viewer_7d_no_cart`, `repeat_buyer`)
+  - 주요 전환식:
+    - `cvr_session_to_purchase = sessions_with_purchase / sessions`
+    - `cvr_view_to_cart = sessions_with_cart / sessions_with_view`
+    - `cvr_cart_to_purchase = sessions_with_purchase / sessions_with_cart`
 
 - **QA**
-  - 이벤트 도메인
-  - transaction 무결성
-  - 핵심 키 null
-  - 핵심 테이블 row count sanity
-  - KPI 범위 sanity (CVR 0~1)
+  - `001_domain_checks.sql`: 이벤트 타입이 `view/addtocart/transaction` 외 값인지 검사
+  - `002_transaction_integrity.sql`: `transaction` 이벤트의 `transaction_id` 누락 검사
+  - `003_null_checks.sql`: 핵심 키(`timestamp_ms`, `visitor_id`, `item_id`, `event_ts`) null 검사
+  - `004_rowcount_sanity.sql`: `stg_rr_events`, `fact_rr_events`, `fact_rr_sessions` 비어있는지 검사
+  - `005_kpi_sanity.sql`: 퍼널 집계 음수 및 CVR 범위(0~1) 이탈 검사
 
 - **EXPORT**
   - `rr_funnel_daily_{date}.csv`
