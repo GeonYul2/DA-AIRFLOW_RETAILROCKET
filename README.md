@@ -49,27 +49,50 @@ EDA 참고:
 | QA | 품질 기준 선반영 | domain / integrity / null / rowcount / KPI range(0~1) 5개 체크를 실행 조건으로 적용 |
 | EXPORT | 실행 가능한 전달물 생성 | QA 통과 시에만 CSV 3종 + summary TXT 1종을 고정 파일명 패턴으로 생성 |
 
-핵심 고정 기준(요약):
-- 세션: 30분 inactivity + 날짜 변경
-- 지표: 분자/분모 정의 고정
-- 품질: QA 5종 통과 후 export
-- 재현: `target_date` backfill
+아래 상세는 **워크플로우 순서(RAW → STAGING → DATA MART → KPI → QA → EXPORT)** 로 정리했습니다.
 
 <details>
-<summary><strong>QA 5종 상세 (무엇을 검사하고, 언제 실패하는가)</strong></summary>
+<summary><strong>RAW 상세 (원본 보존과 적재 기준)</strong></summary>
 
-| 체크 | 검사 내용 | 실패 조건 | SQL |
-|---|---|---|---|
-| Domain check | 이벤트 타입이 허용값(`view/addtocart/transaction`)인지 확인 | 허용값 외 이벤트 존재 | [`001_domain_checks.sql`](sql/retailrocket/90_quality/001_domain_checks.sql) |
-| Transaction integrity | `transaction` 이벤트에 `transaction_id`가 있는지 확인 | `transaction_id` NULL 존재 | [`002_transaction_integrity.sql`](sql/retailrocket/90_quality/002_transaction_integrity.sql) |
-| Null checks | 핵심 키(`timestamp_ms`,`visitor_id`,`item_id`,`event_ts`) 결측 확인 | 핵심 키 NULL 존재 | [`003_null_checks.sql`](sql/retailrocket/90_quality/003_null_checks.sql) |
-| Rowcount sanity | 핵심 테이블이 비어있는지 확인 | `stg_rr_events`/`fact_rr_events`/`fact_rr_sessions` 중 0건 존재 | [`004_rowcount_sanity.sql`](sql/retailrocket/90_quality/004_rowcount_sanity.sql) |
-| KPI sanity | 퍼널 값 음수 여부, CVR 범위(0~1) 확인 | 음수 값 또는 CVR 범위 이탈 | [`005_kpi_sanity.sql`](sql/retailrocket/90_quality/005_kpi_sanity.sql) |
+- 원본 CSV(`events`, `item_properties`, `category_tree`)를 보존해 재처리 기준을 고정합니다.
+- 적재는 `scripts/load_raw/load_retailrocket.py`에서 수행합니다.
+- DDL 기준: [`001_create_tables.sql`](sql/retailrocket/00_ddl/001_create_tables.sql)
 
 </details>
 
 <details>
-<summary><strong>KPI/CRM 정의 상세 (분자·분모와 세그먼트 기준)</strong></summary>
+<summary><strong>STAGING 상세 (전처리 편차를 제거하는 표준화 레이어)</strong></summary>
+
+- 이벤트 정규화: 허용 이벤트 타입(`view/addtocart/transaction`) 기준으로 정제
+- 시간 표준화: `timestamp_ms`를 `event_ts`, `event_date`로 변환
+- 아이템 속성 최신화: item property에서 최신 스냅샷 추출
+- 카테고리 계층 평탄화: 분석 조인에 바로 쓰도록 차원 형태로 변환
+
+SQL:
+- [`001_stg_rr_events.sql`](sql/retailrocket/10_staging/001_stg_rr_events.sql)
+- [`002_stg_rr_item_snapshot.sql`](sql/retailrocket/10_staging/002_stg_rr_item_snapshot.sql)
+- [`003_stg_rr_category_dim.sql`](sql/retailrocket/10_staging/003_stg_rr_category_dim.sql)
+
+</details>
+
+<details>
+<summary><strong>DATA MART 상세 (세션 규칙을 고정해 분석 단위를 통일)</strong></summary>
+
+세션 분리는 visitor 단위 정렬 후 아래 조건에서 새 세션을 시작합니다.
+1. 해당 visitor의 첫 이벤트
+2. 이벤트 날짜 변경
+3. 이전 이벤트 대비 30분 초과 inactivity
+
+세션 ID는 `visitor_id-session_index`로 생성합니다.
+
+SQL:
+- 이벤트 세션화: [`010_fact_rr_events.sql`](sql/retailrocket/20_mart/010_fact_rr_events.sql)
+- 세션 집계: [`020_fact_rr_sessions.sql`](sql/retailrocket/20_mart/020_fact_rr_sessions.sql)
+
+</details>
+
+<details>
+<summary><strong>KPI 상세 (분자·분모/세그먼트 기준 고정)</strong></summary>
 
 ### Funnel (일 단위)
 - `cvr_session_to_purchase = sessions_with_purchase / sessions`
@@ -91,16 +114,28 @@ EDA 참고:
 </details>
 
 <details>
-<summary><strong>DATA MART/세션화 상세 (세션이 어떻게 만들어지는가)</strong></summary>
+<summary><strong>QA 상세 (무엇을 검사하고, 언제 실패하는가)</strong></summary>
 
-세션 분리는 visitor 단위로 정렬 후 아래 조건에서 새 세션을 시작합니다.
-1. 해당 visitor의 첫 이벤트
-2. 이벤트 날짜 변경
-3. 이전 이벤트 대비 30분 초과 inactivity
+| 체크 | 검사 내용 | 실패 조건 | SQL |
+|---|---|---|---|
+| Domain check | 이벤트 타입이 허용값(`view/addtocart/transaction`)인지 확인 | 허용값 외 이벤트 존재 | [`001_domain_checks.sql`](sql/retailrocket/90_quality/001_domain_checks.sql) |
+| Transaction integrity | `transaction` 이벤트에 `transaction_id`가 있는지 확인 | `transaction_id` NULL 존재 | [`002_transaction_integrity.sql`](sql/retailrocket/90_quality/002_transaction_integrity.sql) |
+| Null checks | 핵심 키(`timestamp_ms`,`visitor_id`,`item_id`,`event_ts`) 결측 확인 | 핵심 키 NULL 존재 | [`003_null_checks.sql`](sql/retailrocket/90_quality/003_null_checks.sql) |
+| Rowcount sanity | 핵심 테이블이 비어있는지 확인 | `stg_rr_events`/`fact_rr_events`/`fact_rr_sessions` 중 0건 존재 | [`004_rowcount_sanity.sql`](sql/retailrocket/90_quality/004_rowcount_sanity.sql) |
+| KPI sanity | 퍼널 값 음수 여부, CVR 범위(0~1) 확인 | 음수 값 또는 CVR 범위 이탈 | [`005_kpi_sanity.sql`](sql/retailrocket/90_quality/005_kpi_sanity.sql) |
 
-세션 ID는 `visitor_id-session_index`로 생성합니다.
-- 이벤트 세션화 SQL: [`010_fact_rr_events.sql`](sql/retailrocket/20_mart/010_fact_rr_events.sql)
-- 세션 집계 SQL: [`020_fact_rr_sessions.sql`](sql/retailrocket/20_mart/020_fact_rr_sessions.sql)
+</details>
+
+<details>
+<summary><strong>EXPORT 상세 (운영 전달물 생성 규칙)</strong></summary>
+
+- QA 5종을 모두 통과한 실행에서만 export를 생성합니다.
+- 생성 파일: `rr_funnel_daily_*.csv`, `rr_cohort_weekly_*.csv`, `rr_crm_targets_*.csv`, `rr_pipeline_summary_*.txt`
+- 생성 스크립트:
+  - [`export_rr_funnel_csv.py`](scripts/export_rr_funnel_csv.py)
+  - [`export_rr_cohort_csv.py`](scripts/export_rr_cohort_csv.py)
+  - [`export_rr_crm_targets_csv.py`](scripts/export_rr_crm_targets_csv.py)
+  - [`write_rr_pipeline_summary.py`](scripts/write_rr_pipeline_summary.py)
 
 </details>
 
