@@ -42,8 +42,8 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 | 단계 | 목적 | 설명(산출물) |
 |---|---|---|
 | RAW | 원본 로그를 보존해 추적 기준을 유지 | 원천 3개 테이블 적재: `raw_rr_events`, `raw_rr_item_properties`, `raw_rr_category_tree` |
-| STAGING | 타입/포맷을 통일해 반복 변환 차이를 줄임 | 이벤트 정규화 + 아이템 스냅샷 + 카테고리 트리 생성: `stg_rr_events`, `stg_rr_item_snapshot`, `stg_rr_category_dim` |
-| MART | 분석 단위(fact/dim, 세션)를 고정 | 분석 테이블 5종 구성: `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`, `fact_rr_events`, `fact_rr_sessions` |
+| STAGING | 원천 로그를 분석 가능한 공통 포맷으로 표준화 | 이벤트 정규화 + 아이템 최신 스냅샷 + 카테고리 트리 평탄화: `stg_rr_events`, `stg_rr_item_snapshot`, `stg_rr_category_dim` |
+| DATA MART | 분석 단위(fact/dim, 세션)를 고정 | 분석 테이블 5종 구성: `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`, `fact_rr_events`, `fact_rr_sessions` |
 | KPI | 퍼널·코호트·CRM 정의를 계산 테이블로 분리 | KPI 테이블 4종 계산: `mart_rr_funnel_daily`, `mart_rr_funnel_category_daily`, `mart_rr_cohort_weekly`, `mart_rr_crm_targets_daily` |
 | QA | 품질 기준 통과 여부를 실행 조건으로 적용 | 품질 결과 저장: `quality_check_runs` (`check_name`, `status`, `result_row_count`) |
 | EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | 리포트 파일 4종 생성: `logs/reports/rr_funnel_daily_*.csv`, `logs/reports/rr_cohort_weekly_*.csv`, `logs/reports/rr_crm_targets_*.csv`, `logs/reports/rr_pipeline_summary_*.txt` |
@@ -87,11 +87,20 @@ EDA 재생성:
 ## Modeling (요약/설계 의도)
 
 - **STAGING**
-  - `event_type` 정규화, `timestamp_ms`를 `event_ts/event_date`로 변환
-  - 아이템 최신 속성(`categoryid`, `available`) 스냅샷 구성
-  - 카테고리 트리를 재귀 CTE로 평탄화
+  - 정의 기준:
+    - 원천 로그를 그대로 추적할 수 있어야 함(컬럼 의미 불변)
+    - 타입/포맷 변환은 여기서만 수행(시간, 문자열 정규화)
+    - KPI 계산은 하지 않고, 분석 준비 상태까지만 책임
+  - 구현:
+    - `event_type` 정규화, `timestamp_ms`를 `event_ts/event_date`로 변환
+    - 아이템 최신 속성(`categoryid`, `available`) 스냅샷 구성
+    - 카테고리 트리를 재귀 CTE로 평탄화
 
-- **MART (분석용 fact/dim + 세션화)**
+- **DATA MART (분석용 fact/dim + 세션화)**
+  - 정의 기준:
+    - 분석 grain을 이벤트/세션 단위로 고정
+    - 차원(dim)과 사실(fact)을 분리해 재사용성과 해석 일관성 확보
+    - 세션 규칙을 SQL로 명시해 재현성 확보
   - Dimensions: `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`
   - Facts: `fact_rr_events`, `fact_rr_sessions`
   - 세션 규칙: 동일 `visitor_id` 첫 이벤트 / 날짜 변경 / 이전 이벤트 대비 30분 초과 비활동
