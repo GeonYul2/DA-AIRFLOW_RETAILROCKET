@@ -7,6 +7,10 @@ docs_dir: docs
 
 theme:
   name: material
+  language: ko
+  features:
+    - navigation.top
+    - content.code.copy
 
 nav:
   - Home: index.md
@@ -14,6 +18,17 @@ nav:
   - Runbook: runbook.md
 
 markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
   - toc:
       permalink: false
       toc_depth: "2"
+  - pymdownx.highlight:
+      anchor_linenums: false
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+
+extra_css:
+  - stylesheets/extra.css

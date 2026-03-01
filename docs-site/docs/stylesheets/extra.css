@@ -1,0 +1,45 @@
+:root {
+  --md-text-font: "Pretendard", "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.md-grid {
+  max-width: 1080px;
+}
+
+.md-content {
+  line-height: 1.8;
+}
+
+.md-content h1 {
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.md-content h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.md-content p,
+.md-content li {
+  font-size: 0.95rem;
+}
+
+.md-content blockquote {
+  border-left: 0.2rem solid var(--md-primary-fg-color);
+  background: var(--md-code-bg-color);
+  padding: 0.8rem 1rem;
+  border-radius: 0.3rem;
+}
+
+.md-typeset hr {
+  margin: 2rem 0;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-content__inner {
+    max-width: 52rem;
+    margin: 0 auto;
+  }
+}

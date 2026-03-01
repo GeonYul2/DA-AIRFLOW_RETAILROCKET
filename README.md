@@ -138,5 +138,3 @@ EDA 참고:
 - Project Page: https://geonyul2.github.io/DA-AIRFLOW_RETAILROCKET/
 - GitHub Repo: https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET
 - README: https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET/blob/main/README.md
-
-Pages 배포: Deploy from a branch (`docs/`).
