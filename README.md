@@ -1,4 +1,4 @@
-# DA-AIRFLOW_RETAILROCKET
+# RetailRocket KPI Pipeline: Funnel·Cohort·CRM + QA
 RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Airflow 파이프라인입니다.  
 지표 정의·세션 기준·품질 검증을 고정해 같은 데이터에서 같은 KPI가 나오도록 설계했습니다.  
 결과는 일 단위로 계산되어 운영에 바로 쓰는 CSV/TXT로 저장됩니다.
