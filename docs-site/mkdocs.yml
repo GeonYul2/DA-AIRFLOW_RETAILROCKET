@@ -1,7 +1,7 @@
 site_name: DA-AIRFLOW_RETAILROCKET
 site_description: Airflow 기반 RetailRocket 분석 파이프라인 문서
-site_url: https://<your-github-username>.github.io/da-airflow-retailrocket/
-repo_url: https://github.com/<your-github-username>/da-airflow-retailrocket
+site_url: https://geonyul2.github.io/DA-AIRFLOW_RETAILROCKET/
+repo_url: https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET
 edit_uri: ""
 docs_dir: docs
 
