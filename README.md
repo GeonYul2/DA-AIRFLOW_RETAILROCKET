@@ -31,43 +31,16 @@ RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Air
 - **BA/그로스**: 캠페인 성과 해석 전에 지표 정의와 세션 기준을 먼저 확인할 수 있습니다.
 - **DQA/운영**: 배치 성공 여부가 아니라 KPI 신뢰 기준으로 파이프라인을 운영할 수 있습니다.
 
----
-
-## Quickstart
-
-```bash
-cp .env.example .env
-make up
-make init
-make run-dag
-```
-
-- 점검: `make check`
-- 수동 재계산: Airflow UI에서 `dag_run.conf.target_date` 지정 (예: `2015-09-18`)
-
----
-
-## Outputs
-
-```text
-logs/reports/rr_funnel_daily_2015-09-18.csv
-logs/reports/rr_cohort_weekly_2015-09-18.csv
-logs/reports/rr_crm_targets_2015-09-18.csv
-logs/reports/rr_pipeline_summary_2015-09-18.txt
-```
-
----
-
 ## Project Overview
 
 | 단계 | 목적 | 설명(산출물) |
 |---|---|---|
-| RAW | 원본 로그를 보존해 추적 기준을 유지 | `raw_rr_events`, `raw_rr_item_properties`, `raw_rr_category_tree` |
-| STAGING | 타입/포맷을 통일해 반복 변환 차이를 줄임 | `stg_rr_events`, `stg_rr_item_snapshot`, `stg_rr_category_dim` |
-| MART | 분석 단위(fact/dim, 세션)를 고정 | `dim_rr_category`, `dim_rr_item`, `dim_rr_visitor`, `fact_rr_events`, `fact_rr_sessions` |
-| KPI | 퍼널·코호트·CRM 정의를 계산 테이블로 분리 | `mart_rr_funnel_daily`, `mart_rr_funnel_category_daily`, `mart_rr_cohort_weekly`, `mart_rr_crm_targets_daily` |
-| QA | 품질 기준 통과 여부를 실행 조건으로 적용 | `quality_check_runs` (check_name, status, rows) |
-| EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | `logs/reports/rr_*.csv`, `logs/reports/rr_pipeline_summary_*.txt` |
+| RAW | 원본 로그를 보존해 추적 기준을 유지 | 원천 3개 테이블 적재: `raw_rr_events`, `raw_rr_item_properties`, `raw_rr_category_tree` |
+| STAGING | 타입/포맷을 통일해 반복 변환 차이를 줄임 | 이벤트 정규화 + 아이템 스냅샷 + 카테고리 트리: `stg_rr_events`, `stg_rr_item_snapshot`, `stg_rr_category_dim` |
+| MART | 분석 단위(fact/dim, 세션)를 고정 | 분석 테이블 5종 구성: `dim_rr_*` 3종, `fact_rr_*` 2종 |
+| KPI | 퍼널·코호트·CRM 정의를 계산 테이블로 분리 | KPI 테이블 4종 계산: `mart_rr_funnel_daily`, `mart_rr_funnel_category_daily`, `mart_rr_cohort_weekly`, `mart_rr_crm_targets_daily` |
+| QA | 품질 기준 통과 여부를 실행 조건으로 적용 | 품질 결과 저장: `quality_check_runs` (`check_name`, `status`, `result_row_count`) |
+| EXPORT | 운영 전달용 파일을 일관된 형식으로 생성 | 리포트 파일 4종 생성: `rr_funnel_daily_*.csv`, `rr_cohort_weekly_*.csv`, `rr_crm_targets_*.csv`, `rr_pipeline_summary_*.txt` |
 
 ---
 
@@ -132,6 +105,31 @@ logs/reports/rr_pipeline_summary_2015-09-18.txt
   - `rr_cohort_weekly_{date}.csv`
   - `rr_crm_targets_{date}.csv`
   - `rr_pipeline_summary_{date}.txt`
+
+---
+
+## Quickstart
+
+```bash
+cp .env.example .env
+make up
+make init
+make run-dag
+```
+
+- 점검: `make check`
+- 수동 재계산: Airflow UI에서 `dag_run.conf.target_date` 지정 (예: `2015-09-18`)
+
+---
+
+## Outputs
+
+```text
+logs/reports/rr_funnel_daily_2015-09-18.csv
+logs/reports/rr_cohort_weekly_2015-09-18.csv
+logs/reports/rr_crm_targets_2015-09-18.csv
+logs/reports/rr_pipeline_summary_2015-09-18.txt
+```
 
 ---
 
