@@ -38,7 +38,7 @@ EDA 참고:
 - 재생성 스크립트: `python3 scripts/profile_retailrocket_eda.py`
 
 ## 3) 파이프라인 설계와 구현
-![Pipeline Architecture](docs/assets/pipeline_architecture.svg)
+![Pipeline Architecture](docs/assets/pipeline_architecture.png)
 
 | 단계 | 목적 | 이 단계에서 한 일 |
 |---|---|---|
