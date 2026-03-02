@@ -175,6 +175,5 @@ EDA 참고:
 - **DQA/운영**: 배치 성공과 KPI 신뢰를 분리해 품질 기준으로 운영할 수 있습니다.
 
 링크:
-- Project Page: https://geonyul2.github.io/DA-AIRFLOW_RETAILROCKET/
 - GitHub Repo: https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET
 - README: https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET/blob/main/README.md
