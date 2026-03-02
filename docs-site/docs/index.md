@@ -1,110 +1,112 @@
 # 배치 성공보다 중요한 것: **신뢰할 수 있는 KPI**
 
-대시보드 숫자가 흔들릴 때, 문제는 캠페인 성과가 아니라 **지표 정의**일 수 있습니다.  
-이 프로젝트는 RetailRocket clickstream을 기반으로 퍼널·코호트·CRM 타겟을 산출하되, 핵심 목표를 “집계”가 아닌 **재현 가능한 의사결정 데이터**에 둡니다.
+> Airflow로 `RAW → STAGING → MART → KPI → QA → EXPORT`를 자동화해,  
+> **같은 로그를 다시 실행하면 같은 KPI가 나오도록** 만든 데이터 품질 중심 파이프라인입니다.
 
-> 같은 로그를 다시 돌렸을 때, 같은 KPI가 나와야 합니다.
-
----
-
-## 왜 이 파이프라인을 만들었나
-
-현업에서 KPI 해석이 흔들리는 순간은 생각보다 단순합니다.
-
-- 세션 기준이 팀마다 다르다.
-- 전환 이벤트 정의가 배포 중 바뀌었다.
-- `transaction_id` 누락이 조용히 늘었다.
-
-배치는 성공해도, 지표는 신뢰를 잃을 수 있습니다.  
-그래서 이 파이프라인은 Airflow 성공 여부 이전에, **“이 숫자를 의사결정에 써도 되는가”**를 먼저 검증하도록 설계했습니다.
+- Repo: https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET
+- README: https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET/blob/main/README.md
 
 ---
 
-## 무엇을 제공하나
+## 1) 왜 만들었나
 
-### 산출물
+실무에서는 배치 성공보다 아래 문제가 KPI 신뢰를 더 자주 깨뜨립니다.
 
-- 퍼널(Funnel) KPI
-- 코호트(Cohort) KPI
-- CRM 타겟 데이터
-- 운영 전달용 고정 포맷: CSV 3종 + Summary TXT 1종
+- 세션 기준이 팀마다 달라 같은 로그에서도 CVR이 달라짐
+- 전환 이벤트 정의가 바뀌어 분자/분모 해석이 흔들림
+- `transaction_id` 누락/결측이 누적되어 구매 지표가 왜곡됨
 
-### 품질 게이트
-
-실행 완료보다 **품질 통과**를 우선합니다.
-
-- domain 검증
-- integrity 검증
-- null 검증
-- rowcount 검증
-- KPI range 검증(0~1)
-
-#### 왜 이 5종인가 (리스크 기반 선정)
-- 형식 오류(domain)
-- 식별/무결성 오류(integrity)
-- 완전성 오류(null)
-- 입수/처리 건전성 오류(rowcount)
-- 지표 의미 오류(KPI sanity)
-
-핵심은 체크 개수를 늘리는 것이 아니라, **의사결정을 왜곡하는 주요 실패 모드를 최소 세트로 커버**하는 것입니다.
-
-#### 테스트 케이스 작성 관점
-각 QA는 아래를 명시하도록 설계했습니다.
-- 무엇을 결함으로 볼지(Given)
-- PASS/FAIL 기준
-- 실패 시 조치(파이프라인 중단, 원인 점검 후 재실행/backfill)
+그래서 이 프로젝트는 집계 자체보다,  
+**“이 숫자를 의사결정에 써도 되는가”를 자동 검증하는 구조**를 목표로 했습니다.
 
 ---
 
-## 처리 흐름 한눈에 보기
+## 2) 아키텍처
 
 ![Pipeline Architecture](assets/pipeline_architecture.svg)
 
-1. **RAW** — 원본 보존으로 추적 가능성 확보
-2. **STAGING** — 타입/포맷 표준화로 전처리 편차 제거
-3. **DATA MART** — 세션화와 분석 grain 정렬
-4. **KPI** — 퍼널·코호트·CRM 계산 책임 분리
-5. **QA** — 기준 미달 시 후속 단계 차단
-6. **EXPORT** — 운영팀이 바로 쓰는 고정 산출물 생성
+1. **RAW**: 원본 보존 (추적 가능성)
+2. **STAGING**: 타입/포맷 정규화
+3. **MART**: 세션화 + 분석 단위 고정
+4. **KPI**: 퍼널/코호트/CRM 계산
+5. **QA**: 품질 기준 미달 시 차단
+6. **EXPORT**: 통과 결과만 CSV/TXT 생성
 
 ---
 
-## 실행 근거(Proof)
+## 3) QA 5종을 설계한 이유
 
-### 1) 재현 가능한 실행
+QA 개수를 늘리는 게 목적이 아니라, **의사결정을 망치는 실패 모드**를 최소 세트로 막는 게 목적이었습니다.
 
-대표 검증 실행은 `target_date=2015-06-16` 수동 백필(run)입니다.
+| 실제 우려 상황 | 왜 위험한가 | 설계한 QA |
+|---|---|---|
+| 이벤트 타입 값이 제각각 유입 | 퍼널 분류 왜곡 | Domain check |
+| 구매 이벤트 `transaction_id` 누락 | 구매 식별 불가 | Transaction integrity |
+| 핵심 키 결측 | 세션/조인/집계 왜곡 전파 | Null checks |
+| 핵심 테이블 0건 | 수집/적재 이상인데 집계 진행 | Rowcount sanity |
+| KPI 범위 이탈/음수 | 계산 로직 오류가 운영 반영 | KPI sanity |
+
+---
+
+## 4) 테스트 케이스 명세
+
+| Test Case | Given | PASS 기준 | 실패 시 동작 |
+|---|---|---|---|
+| TC-01 Domain | `event_type` 허용값 외 존재 여부 | 결과 0행 | 품질 체크 실패, DAG 중단 |
+| TC-02 Integrity | `transaction` 이벤트의 `transaction_id IS NULL` | 결과 0행 | 품질 체크 실패, 원인 점검 후 backfill |
+| TC-03 Null | 핵심 키 NULL 존재 여부 | 결과 0행 | 품질 체크 실패, 결측 원인 추적 |
+| TC-04 Rowcount | 핵심 테이블 0건 여부 | 결과 0행 | 품질 체크 실패, 적재 단계 점검 |
+| TC-05 KPI Sanity | CVR 0~1 범위/음수 이탈 여부 | 결과 0행 | 품질 체크 실패, 계산식 점검 |
+
+> 구현상 `run_quality_checks.py`에서 하나라도 FAIL이면 `exit 1`로 종료되어,  
+> QA 통과 전에는 export 단계가 실행되지 않습니다.
+
+---
+
+## 5) 실행 증거 (Proof)
+
+### 5-1. 백필 실행 성공
+
+대표 검증 실행: `target_date=2015-06-16`
 
 ![Airflow run success](assets/airflow_run_success.png)
 
-### 2) 결과물 일관성
+### 5-2. 결과물 일관성
 
-동일 규격의 산출물(CSV 3 + TXT 1)을 남겨, 날짜 단위 재계산과 비교 검증이 가능합니다.
+동일 포맷 산출물(CSV 3종 + summary TXT 1종)을 남겨 날짜 단위 비교 검증이 가능합니다.
 
 ![Outputs 2015-06-16](assets/outputs_2015-06-16.png)
 
 ---
 
-## 실무에서 어떤 의미가 있나
+## 6) 재현 방법 (Quick Run)
 
-- **분석/그로스 팀**: KPI 급락 시, 캠페인 조정 전에 정의·세션·누락 이슈를 먼저 점검할 수 있습니다.
-- **데이터 운영 팀**: 배치 성공과 지표 신뢰를 분리해, 품질 기준 중심으로 운영할 수 있습니다.
+```bash
+cp .env.example .env
+make up
+make init
+make run-dag
+```
 
-결국 이 문서와 파이프라인의 목적은 하나입니다.  
-**“숫자를 만드는 것”이 아니라 “숫자를 믿을 수 있게 만드는 것.”**
+수동 백필 실행 시:
+
+```json
+{"target_date":"2015-06-16"}
+```
+
+기대 산출물:
+
+- `logs/reports/rr_funnel_daily_2015-06-16.csv`
+- `logs/reports/rr_cohort_weekly_2015-06-16.csv`
+- `logs/reports/rr_crm_targets_2015-06-16.csv`
+- `logs/reports/rr_pipeline_summary_2015-06-16.txt`
 
 ---
 
-## 다음 확장 포인트
+## 7) 실무 활용 포인트
 
-- Slack 기반 실패/품질 알림
-- 품질 추세 대시보드
-- dbt/Great Expectations 연계 테스트
+- **분석/그로스**: KPI 급락 시 캠페인 조정보다 정의/결측 이슈를 먼저 점검
+- **DQA/운영**: 배치 성공과 지표 신뢰를 분리해 품질 기준 중심 운영
 
----
-
-## 바로가기
-
-- [Metrics](metrics.md)
-- [Runbook](runbook.md)
-- [Source Code](https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET)
+핵심 메시지:  
+**“숫자를 만드는 파이프라인”이 아니라 “숫자를 믿을 수 있게 만드는 파이프라인.”**

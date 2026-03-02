@@ -9,13 +9,10 @@ theme:
   name: material
   language: ko
   features:
-    - navigation.top
     - content.code.copy
 
 nav:
-  - Home: index.md
-  - Metrics: metrics.md
-  - Runbook: runbook.md
+  - Portfolio: index.md
 
 markdown_extensions:
   - admonition

@@ -3,7 +3,7 @@
 }
 
 .md-grid {
-  max-width: 1080px;
+  max-width: 1120px;
 }
 
 .md-content {
@@ -13,6 +13,7 @@
 .md-content h1 {
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  font-size: 2rem;
 }
 
 .md-content h2 {
@@ -23,7 +24,7 @@
 
 .md-content p,
 .md-content li {
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .md-content blockquote {
@@ -38,6 +39,16 @@
 }
 
 @media screen and (min-width: 76.25em) {
+  .md-sidebar--primary,
+  .md-sidebar--secondary {
+    display: none;
+  }
+
+  .md-main__inner {
+    max-width: 62rem;
+    margin: 0 auto;
+  }
+
   .md-content__inner {
     max-width: 52rem;
     margin: 0 auto;
