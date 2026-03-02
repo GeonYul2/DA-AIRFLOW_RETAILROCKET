@@ -7,7 +7,7 @@
 }
 
 .md-content {
-  line-height: 1.8;
+  line-height: 1.75;
 }
 
 .md-content h1 {
@@ -18,13 +18,19 @@
 
 .md-content h2 {
   margin-top: 2.5rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
   letter-spacing: -0.01em;
 }
 
 .md-content p,
 .md-content li {
   font-size: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.md-content ul,
+.md-content ol {
+  margin-bottom: 1.2rem;
 }
 
 .md-content blockquote {
@@ -35,7 +41,85 @@
 }
 
 .md-typeset hr {
-  margin: 2rem 0;
+  margin: 2.4rem 0;
+}
+
+.hero-callout {
+  margin: 1.4rem 0 2rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(53, 197, 240, 0.35);
+  border-radius: 0.7rem;
+  background: linear-gradient(180deg, rgba(53, 197, 240, 0.08), rgba(53, 197, 240, 0.02));
+}
+
+.hero-callout .hero-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #35C5F0;
+}
+
+.hero-callout .hero-math {
+  margin: 0.35rem 0 0.45rem;
+  font-size: 1.22rem;
+  font-weight: 700;
+}
+
+.hero-callout .hero-desc {
+  margin: 0;
+}
+
+figure {
+  margin: 1.4rem 0 1.8rem;
+}
+
+figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--md-default-fg-color--light);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.8rem 0 1.4rem;
+}
+
+.table-wrap table {
+  min-width: 900px;
+  table-layout: fixed;
+}
+
+.table-wrap th,
+.table-wrap td {
+  word-break: keep-all;
+  vertical-align: top;
+}
+
+.pass {
+  color: #35C5F0;
+  font-weight: 700;
+}
+
+.future-card {
+  margin: 1rem 0 1.4rem;
+  padding: 1rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(53, 197, 240, 0.3);
+  background: rgba(53, 197, 240, 0.06);
+}
+
+.future-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.55rem;
 }
 
 @media screen and (min-width: 76.25em) {
