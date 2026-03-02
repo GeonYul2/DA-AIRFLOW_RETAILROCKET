@@ -1,6 +1,6 @@
-# RetailRocket Funnel·Cohort·CRM KPI Pipeline + QA
-RetailRocket clickstream으로 **퍼널·코호트·CRM 타겟**을 산출하는 Airflow 파이프라인입니다.  
-핵심은 배치 성공이 아니라, **지표 정의·세션 기준·품질 검증**을 고정해 같은 데이터에서 같은 KPI가 나오게 만드는 것입니다.
+# [이커머스/로그QA] Airflow 기반 클릭스트림 KPI 신뢰성 파이프라인 구축 (QA 5종 검증)
+RetailRocket clickstream으로 퍼널·코호트·CRM 타겟을 산출하는 Airflow 파이프라인입니다.
+핵심은 배치 성공이 아니라, QA 5종 검증으로 KPI를 의사결정 가능한 신뢰 수준으로 고정하는 것입니다.
 
 ## 1) 문제와 목표
 CVR 급락 알림이 오면 보통 캠페인/예산 조정을 먼저 논의합니다.  
