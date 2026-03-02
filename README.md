@@ -46,13 +46,13 @@ EDA 참고:
 | PRE-RAW QA | STAGING 전 원천 정합성 선검증 | 원천 도메인/트랜잭션 무결성/핵심 null 체크를 통과한 실행만 STAGING 진행 |
 | STAGING | 전처리 편차 제거 | 이벤트 타입 정규화, 시간 변환(`timestamp_ms → event_ts/event_date`), 아이템 최신 속성 스냅샷, 카테고리 트리 평탄화 |
 | DATA MART | 분석 단위 통일 | dim/fact 구조로 분리하고 세션 규칙(30분 inactivity + 날짜 변경)을 SQL로 고정 |
-| PRE-MART QA | KPI 산출 직전 마트 정합성 검증 | event/session 일치 + stg/fact null 체크를 통과한 실행만 KPI 계산 진행 |
+| PRE-KPI QA | KPI 산출 직전 마트 정합성 검증 | event/session 일치 + stg/fact null 체크를 통과한 실행만 KPI 계산 진행 |
 | KPI | 지표 계산 일관성 확보 | Funnel/Cohort/CRM 계산을 별도 테이블로 분리해 분자/분모 정의를 단일화 |
 | POST-QA | KPI 산출 후 결과 검증 | KPI sanity + source 일치 + monotonic 검증을 통과한 실행만 export 허용 |
-| EXPORT | 실행 가능한 전달물 생성 | PRE/POST QA 게이트 통과 시에만 CSV 3종 + summary TXT 1종을 고정 파일명 패턴으로 생성 |
+| EXPORT | 실행 가능한 전달물 생성 | PRE-RAW/PRE-KPI/POST-KPI QA 게이트 통과 시에만 CSV 3종 + summary TXT 1종을 고정 파일명 패턴으로 생성 |
 
 <details>
-<summary><strong>워크플로우 전체 상세 보기 (RAW → PRE-RAW QA → STAGING → DATA MART → PRE-MART QA → KPI → POST-KPI QA → EXPORT)</strong></summary>
+<summary><strong>워크플로우 전체 상세 보기 (RAW → PRE-RAW QA → STAGING → DATA MART → PRE-KPI QA → KPI → POST-KPI QA → EXPORT)</strong></summary>
 
 ### 1) RAW — 원본을 “훼손 없이” 보존
 - **왜 필요한가**: 원본이 바뀌면 원인 추적이 불가능해집니다. 재현 가능한 분석의 출발점은 원본 보존입니다.
@@ -93,9 +93,9 @@ EDA 참고:
   - 이벤트 세션화: [`010_fact_rr_events.sql`](sql/retailrocket/20_mart/010_fact_rr_events.sql)
   - 세션 집계: [`020_fact_rr_sessions.sql`](sql/retailrocket/20_mart/020_fact_rr_sessions.sql)
 
-### 5) PRE-MART QA — KPI 직전 마트 정합성 게이트
+### 5) PRE-KPI QA — KPI 직전 마트 정합성 게이트
 - **왜 필요한가**: STAGING/MART를 거친 집계 단위가 틀리면 KPI 계산이 맞아도 해석이 틀립니다.
-- **어떻게 했나**: DATA MART 이후 PRE-MART 게이트를 실행해 통과한 경우에만 KPI 계산으로 진행합니다.
+- **어떻게 했나**: DATA MART 이후 PRE-KPI 게이트를 실행해 통과한 경우에만 KPI 계산으로 진행합니다.
 
 | 체크 | 무엇을 막는가 | 실패 조건 (설명형) | SQL |
 |---|---|---|---|
@@ -126,12 +126,12 @@ EDA 참고:
 | KPI sanity | 비정상 KPI 수치 배포 | KPI 값이 음수이거나 CVR이 0~1 범위를 벗어나면 계산식/분모 처리 이상으로 판단해 실패 | [`001_kpi_sanity.sql`](sql/retailrocket/95_quality_post_kpi/001_kpi_sanity.sql) |
 | Funnel 일치 + monotonic | KPI 집계 오차/퍼널 역전 배포 | source 대비 KPI 집계값이 다르거나 `purchase<=cart<=view`/세션 퍼널 단조성이 깨지면 실패 | [`002_funnel_reconciliation_monotonic.sql`](sql/retailrocket/95_quality_post_kpi/002_funnel_reconciliation_monotonic.sql) |
 
-실제로 `scripts/run_quality_checks.py`는 각 게이트에서 하나라도 FAIL이면 비정상 종료(`exit 1`)되며, 이 때문에 PRE/POST QA 통과 전에는 CSV/TXT export가 실행되지 않습니다.
+실제로 `scripts/run_quality_checks.py`는 각 게이트에서 하나라도 FAIL이면 비정상 종료(`exit 1`)되며, 이 때문에 PRE-RAW/PRE-KPI/POST-KPI QA 통과 전에는 CSV/TXT export가 실행되지 않습니다.
 
 ### 8) EXPORT — 운영팀이 바로 쓸 수 있는 형태로 마감
 - **왜 필요한가**: 분석 결과를 실행 포맷으로 전달하지 않으면 후속 액션이 지연됩니다.
 - **어떻게 했나**
-  - PRE/POST QA 게이트 통과 실행에서만 CSV/TXT를 생성
+  - PRE-RAW/PRE-KPI/POST-KPI QA 게이트 통과 실행에서만 CSV/TXT를 생성
   - 파일명 규칙 고정(`rr_funnel_daily_*`, `rr_cohort_weekly_*`, `rr_crm_targets_*`, `rr_pipeline_summary_*`)
 - **관련 스크립트**
   - [`export_rr_funnel_csv.py`](scripts/export_rr_funnel_csv.py)
@@ -184,7 +184,7 @@ docker compose exec airflow-apiserver \
 핵심 수치(2015-06-16):
 - Funnel: visitors `4,379`, sessions `4,540`, purchases `67`, `cvr_session_to_purchase=0.0134`
 - CRM 분포: `cart_abandoner_today=80`, `high_intent_viewer_7d_no_cart=115`, `repeat_buyer=117`
-- QA: PRE-RAW / PRE-MART / POST-KPI 체크 모두 `PASS`
+- QA: PRE-RAW / PRE-KPI / POST-KPI 체크 모두 `PASS`
 
 산출물 경로:
 - 런타임 출력: `logs/reports/`
