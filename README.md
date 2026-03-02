@@ -190,10 +190,6 @@ docker compose exec airflow-apiserver \
 - 런타임 출력: `logs/reports/`
 - 포트폴리오 샘플: `docs/samples/outputs/`
 
-## 5) 활용 관점
-- **BA/그로스**: 캠페인 조정 전에 정의/세션/누락을 먼저 점검할 수 있습니다.
-- **DQA/운영**: 배치 성공과 KPI 신뢰를 분리해 품질 기준으로 운영할 수 있습니다.
-
 링크:
 - GitHub Repo: https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET
 - README: https://github.com/GeonYul2/DA-AIRFLOW_RETAILROCKET/blob/main/README.md
