@@ -65,11 +65,11 @@ EDA 참고:
 - **왜 필요한가**: raw 단계에서 깨진 데이터가 들어오면 STAGING부터 왜곡이 전파됩니다.
 - **어떻게 했나**: RAW 직후 PRE-RAW 게이트를 실행해 통과한 경우에만 STAGING으로 진행합니다.
 
-| 게이트 | 체크 | 무엇을 막는가 | 실패 조건 | SQL |
-|---|---|---|---|---|
-| PRE-RAW | Domain + timestamp | 허용되지 않은 이벤트 타입/비정상 timestamp 유입 | null/blank/비허용 event_type, `timestamp_ms<=0` | [`001_domain_timestamp_checks.sql`](sql/retailrocket/90_quality_pre_raw/001_domain_timestamp_checks.sql) |
-| PRE-RAW | Transaction integrity | 구매/비구매 이벤트 식별 불일치 | transaction인데 `transaction_id` NULL, non-transaction인데 tx_id 존재, tx_id 다중 visitor 매핑 | [`002_transaction_integrity.sql`](sql/retailrocket/90_quality_pre_raw/002_transaction_integrity.sql) |
-| PRE-RAW | Raw null checks | 원천 핵심 컬럼 결측 전파 | `timestamp_ms/visitor_id/event_type/item_id` NULL | [`003_null_checks.sql`](sql/retailrocket/90_quality_pre_raw/003_null_checks.sql) |
+| 체크 | 무엇을 막는가 | 실패 조건 (설명형) | SQL |
+|---|---|---|---|
+| Domain + timestamp | 허용되지 않은 이벤트 타입/비정상 timestamp 유입 | `event_type`이 허용값(`view/addtocart/transaction`) 밖이거나 공백/NULL이면, 이벤트 분류 기준이 깨졌다고 판단해 실패 | [`001_domain_timestamp_checks.sql`](sql/retailrocket/90_quality_pre_raw/001_domain_timestamp_checks.sql) |
+| Transaction integrity | 구매/비구매 이벤트 식별 불일치 | transaction 이벤트인데 `transaction_id`가 비어 있거나, non-transaction 이벤트에 `transaction_id`가 들어오거나, 하나의 `transaction_id`가 여러 visitor에 매핑되면 실패 | [`002_transaction_integrity.sql`](sql/retailrocket/90_quality_pre_raw/002_transaction_integrity.sql) |
+| Raw null checks | 원천 핵심 컬럼 결측 전파 | `timestamp_ms`, `visitor_id`, `event_type`, `item_id` 중 하나라도 NULL이면 세션화/집계 전제 자체가 깨졌다고 보고 실패 | [`003_null_checks.sql`](sql/retailrocket/90_quality_pre_raw/003_null_checks.sql) |
 
 ### 3) STAGING — 분석 전에 “형식”을 먼저 통일
 - **왜 필요한가**: 원본 로그는 타입/시간/속성 포맷이 제각각이라 바로 집계하면 팀마다 다른 결과가 나옵니다.
@@ -97,11 +97,11 @@ EDA 참고:
 - **왜 필요한가**: STAGING/MART를 거친 집계 단위가 틀리면 KPI 계산이 맞아도 해석이 틀립니다.
 - **어떻게 했나**: DATA MART 이후 PRE-MART 게이트를 실행해 통과한 경우에만 KPI 계산으로 진행합니다.
 
-| 게이트 | 체크 | 무엇을 막는가 | 실패 조건 | SQL |
-|---|---|---|---|---|
-| PRE-MART | Count reconciliation | raw→stg→fact 행수 불일치 전파 | target_date event count mismatch | [`001_event_count_reconciliation.sql`](sql/retailrocket/91_quality_pre_mart/001_event_count_reconciliation.sql) |
-| PRE-MART | Session reconciliation | 세션 집계 기준 불일치 | `fact_rr_sessions` vs `fact_rr_events.distinct(session_id)` mismatch | [`002_session_count_reconciliation.sql`](sql/retailrocket/91_quality_pre_mart/002_session_count_reconciliation.sql) |
-| PRE-MART | Stg/Fact null checks | 핵심 키 결측으로 인한 KPI 왜곡 | `event_ts/session_id` 등 핵심 컬럼 NULL | [`003_null_checks.sql`](sql/retailrocket/91_quality_pre_mart/003_null_checks.sql) |
+| 체크 | 무엇을 막는가 | 실패 조건 (설명형) | SQL |
+|---|---|---|---|
+| Count reconciliation | raw→stg→fact 행수 불일치 전파 | 같은 `target_date` 기준 이벤트 건수가 raw/stg/fact 사이에서 다르면, 변환·조인 과정에서 유실/중복이 생긴 것으로 보고 실패 | [`001_event_count_reconciliation.sql`](sql/retailrocket/91_quality_pre_mart/001_event_count_reconciliation.sql) |
+| Session reconciliation | 세션 집계 기준 불일치 | `fact_rr_sessions`의 세션 수와 `fact_rr_events`에서 집계한 distinct session 수가 다르면 세션화 규칙 적용 불일치로 보고 실패 | [`002_session_count_reconciliation.sql`](sql/retailrocket/91_quality_pre_mart/002_session_count_reconciliation.sql) |
+| Stg/Fact null checks | 핵심 키 결측으로 인한 KPI 왜곡 | `event_ts`, `session_id` 같은 분석 핵심 키가 NULL이면 KPI 분자/분모 왜곡 가능성이 높아 실패 | [`003_null_checks.sql`](sql/retailrocket/91_quality_pre_mart/003_null_checks.sql) |
 
 ### 6) KPI — “숫자”가 아니라 “정의”를 고정
 - **왜 필요한가**: KPI는 값보다 정의가 중요합니다. 분자/분모가 흔들리면 비교 자체가 무의미해집니다.
@@ -121,10 +121,10 @@ EDA 참고:
 - **왜 필요한가**: KPI가 계산됐더라도 값의 일관성/대사 검증이 안 되면 운영 전달물 신뢰가 떨어집니다.
 - **어떻게 했나**: KPI 계산 후 범위 sanity + source 대사 + monotonic 규칙을 검증했습니다.
 
-| 게이트 | 체크 | 무엇을 막는가 | 실패 조건 | SQL |
-|---|---|---|---|---|
-| POST-KPI | KPI sanity | 비정상 KPI 수치 배포 | 음수 값 또는 CVR 범위(0~1) 이탈 | [`001_kpi_sanity.sql`](sql/retailrocket/95_quality_post_kpi/001_kpi_sanity.sql) |
-| POST-KPI | Funnel 대사 + monotonic | KPI 집계 오차/퍼널 역전 배포 | source 대사 불일치, `purchase<=cart<=view` 또는 세션 퍼널 단조성 위반 | [`002_funnel_reconciliation_monotonic.sql`](sql/retailrocket/95_quality_post_kpi/002_funnel_reconciliation_monotonic.sql) |
+| 체크 | 무엇을 막는가 | 실패 조건 (설명형) | SQL |
+|---|---|---|---|
+| KPI sanity | 비정상 KPI 수치 배포 | KPI 값이 음수이거나 CVR이 0~1 범위를 벗어나면 계산식/분모 처리 이상으로 판단해 실패 | [`001_kpi_sanity.sql`](sql/retailrocket/95_quality_post_kpi/001_kpi_sanity.sql) |
+| Funnel 대사 + monotonic | KPI 집계 오차/퍼널 역전 배포 | source 대비 KPI 대사값이 다르거나 `purchase<=cart<=view`/세션 퍼널 단조성이 깨지면 실패 | [`002_funnel_reconciliation_monotonic.sql`](sql/retailrocket/95_quality_post_kpi/002_funnel_reconciliation_monotonic.sql) |
 
 실제로 `scripts/run_quality_checks.py`는 각 게이트에서 하나라도 FAIL이면 비정상 종료(`exit 1`)되며, 이 때문에 PRE/POST QA 통과 전에는 CSV/TXT export가 실행되지 않습니다.
 
