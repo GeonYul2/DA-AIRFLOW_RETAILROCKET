@@ -107,6 +107,36 @@ EDA 참고:
 | Rowcount sanity | 빈 테이블 기반 잘못된 계산 | 핵심 테이블 0건 존재 | [`004_rowcount_sanity.sql`](sql/retailrocket/90_quality/004_rowcount_sanity.sql) |
 | KPI sanity | 비정상 KPI 수치 배포 | 음수 값 또는 CVR 범위(0~1) 이탈 | [`005_kpi_sanity.sql`](sql/retailrocket/90_quality/005_kpi_sanity.sql) |
 
+#### QA 5종 선정 근거 (왜 이 5개인가)
+본 프로젝트는 로그 품질 리스크를 다음 5개 실패 모드로 분해하고, 각 모드를 최소 1개 테스트 케이스로 커버하도록 설계했습니다.
+
+- **선정 기준 1 — 발생 가능성**: 실제 로그/배치 환경에서 자주 발생하는가
+- **선정 기준 2 — 영향도**: KPI/의사결정 왜곡으로 이어지는가
+- **선정 기준 3 — 조기 탐지성**: SQL로 즉시 PASS/FAIL 판정 가능한가
+
+| 실패 모드 | 대표 리스크 | 선택한 QA 체크 |
+|---|---|---|
+| 형식 오류 | 허용되지 않은 이벤트 타입 유입 | Domain check |
+| 식별/무결성 오류 | 구매 이벤트 식별자 누락 | Transaction integrity |
+| 완전성 오류 | 핵심 키 NULL로 조인/집계 왜곡 | Null checks |
+| 입수/처리 건전성 오류 | 핵심 테이블 0건(수집/적재 이상) | Rowcount sanity |
+| 지표 의미 오류 | 비즈니스적으로 불가능한 KPI 값 | KPI sanity |
+
+즉, QA 5종은 “체크 개수”가 아니라 **주요 실패 모드를 빠짐없이 차단하기 위한 최소 세트**입니다.
+
+#### JD 관점 테스트 케이스 명세 (작성/정의)
+아래 표는 “테스트 케이스 작성 및 정의” 요구사항에 맞춘 실제 운영 명세입니다.
+
+| Test Case | 목적 | 입력/상황 (Given) | PASS 기준 | FAIL 시 조치 |
+|---|---|---|---|---|
+| TC-01 Domain | 허용 이벤트 외 값 차단 | `raw_rr_events.event_type` 검사 | 결과 0행 | `run_quality_checks` 실패 처리, export 차단, 원천 이벤트 표준화 확인 후 재실행 |
+| TC-02 Integrity | 구매 식별자 누락 차단 | `event_type='transaction'` 이면서 `transaction_id IS NULL` 검사 | 결과 0행 | 해당 run 실패 + `quality_check_runs` 기록 확인, 원천/적재 로직 점검 후 backfill |
+| TC-03 Null | 핵심 키 결측 차단 | `timestamp_ms/visitor_id/item_id/event_ts` NULL 검사 | 결과 0행 | 결측 원인(수집/변환) 추적 후 재실행 |
+| TC-04 Rowcount | 빈 입력 기반 집계 차단 | `stg_rr_events/fact_rr_events/fact_rr_sessions` 건수 검사 | 모두 1건 이상 | 적재/마트 단계 상태 점검 후 재실행 |
+| TC-05 KPI Sanity | 비정상 KPI 배포 차단 | target_date의 지표 값 범위 검사 | 음수 없음 + CVR 0~1 | 계산 로직/분모 분자 정의 점검 후 재실행 |
+
+현재 파이프라인에서는 FAIL 발생 시 `scripts/run_quality_checks.py`가 비정상 종료되어 DAG가 중단되고, QA 통과 전에는 CSV/TXT export가 실행되지 않습니다.
+
 ### 6) EXPORT — 운영팀이 바로 쓸 수 있는 형태로 마감
 - **왜 필요한가**: 분석 결과를 실행 포맷으로 전달하지 않으면 후속 액션이 지연됩니다.
 - **어떻게 했나**
