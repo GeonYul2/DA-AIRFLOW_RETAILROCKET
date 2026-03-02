@@ -9,7 +9,7 @@ RUN_ID_TEMPLATE = "{{ run_id }}"
 
 with DAG(
     dag_id="rr_funnel_daily",
-    description="RetailRocket clickstream: raw -> funnel/cohort/CRM -> quality -> export",
+    description="RetailRocket clickstream: raw -> pre/post quality gates -> KPI -> export",
     schedule="0 9 * * *",
     start_date=datetime(2015, 5, 3, tz="Asia/Seoul"),
     catchup=False,
@@ -67,12 +67,35 @@ with DAG(
         ),
     )
 
-    run_quality_checks = BashOperator(
-        task_id="run_quality_checks",
+    run_quality_pre_raw = BashOperator(
+        task_id="run_quality_pre_raw",
         bash_command=(
             "cd /opt/airflow/project && "
             "python -m scripts.run_quality_checks "
-            "--dir ${SQL_ROOT:-sql/retailrocket}/90_quality "
+            "--dir ${SQL_ROOT:-sql/retailrocket}/90_quality_pre_raw "
+            "--check-phase pre_raw "
+            f"--target-date {TARGET_DATE_TEMPLATE} --run-id {RUN_ID_TEMPLATE}"
+        ),
+    )
+
+    run_quality_pre_mart = BashOperator(
+        task_id="run_quality_pre_mart",
+        bash_command=(
+            "cd /opt/airflow/project && "
+            "python -m scripts.run_quality_checks "
+            "--dir ${SQL_ROOT:-sql/retailrocket}/91_quality_pre_mart "
+            "--check-phase pre_mart "
+            f"--target-date {TARGET_DATE_TEMPLATE} --run-id {RUN_ID_TEMPLATE}"
+        ),
+    )
+
+    run_quality_post_kpi = BashOperator(
+        task_id="run_quality_post_kpi",
+        bash_command=(
+            "cd /opt/airflow/project && "
+            "python -m scripts.run_quality_checks "
+            "--dir ${SQL_ROOT:-sql/retailrocket}/95_quality_post_kpi "
+            "--check-phase post_kpi "
             f"--target-date {TARGET_DATE_TEMPLATE} --run-id {RUN_ID_TEMPLATE}"
         ),
     )
@@ -118,10 +141,12 @@ with DAG(
     (
         check_raw_freshness
         >> load_raw_rr
+        >> run_quality_pre_raw
         >> build_staging
         >> build_mart
+        >> run_quality_pre_mart
         >> compute_kpis
-        >> run_quality_checks
+        >> run_quality_post_kpi
         >> export_funnel
         >> export_cohort
         >> export_crm

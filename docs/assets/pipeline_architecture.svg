@@ -1,11 +1,10 @@
-<svg width="1800" height="560" viewBox="0 0 1800 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="2060" height="560" viewBox="0 0 2060 560" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style>
       .title { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 40px; font-weight: 700; fill: #0f172a; }
       .subTitle { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 22px; font-weight: 500; fill: #475569; }
-      .boxTitle { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 34px; font-weight: 700; fill: #0f172a; }
-      .boxLine { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 21px; font-weight: 500; fill: #334155; }
-      .gate { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #334155; }
+      .boxTitle { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 27px; font-weight: 700; fill: #0f172a; }
+      .boxLine { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 17px; font-weight: 500; fill: #334155; }
       .footer { font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif; font-size: 18px; font-weight: 500; fill: #475569; }
     </style>
     <marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
@@ -13,62 +12,75 @@
     </marker>
   </defs>
 
-  <rect x="0" y="0" width="1800" height="560" fill="#f8fafc"/>
-  <text x="900" y="62" text-anchor="middle" class="title">Airflow RetailRocket Pipeline Architecture</text>
-  <text x="900" y="96" text-anchor="middle" class="subTitle">RAW → STAGING → DATA MART → KPI → QA → EXPORT</text>
+  <rect x="0" y="0" width="2060" height="560" fill="#f8fafc"/>
+  <text x="1030" y="62" text-anchor="middle" class="title">Airflow RetailRocket Pipeline Architecture</text>
+  <text x="1030" y="96" text-anchor="middle" class="subTitle">RAW → PRE-RAW QA → STAGING → DATA MART → PRE-MART QA → KPI → POST-KPI QA → EXPORT</text>
 
   <g>
-    <rect x="32" y="170" rx="18" ry="18" width="250" height="220" fill="#dbeafe" stroke="#334155" stroke-width="2.5"/>
-    <text x="157" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">RAW</text>
-    <text x="157" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">events / category</text>
-    <text x="157" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">item properties</text>
+    <rect x="20" y="170" rx="18" ry="18" width="220" height="220" fill="#dbeafe" stroke="#334155" stroke-width="2.5"/>
+    <text x="130" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">RAW</text>
+    <text x="130" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">events / category</text>
+    <text x="130" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">item properties</text>
   </g>
 
   <g>
-    <rect x="322" y="170" rx="18" ry="18" width="250" height="220" fill="#dcfce7" stroke="#334155" stroke-width="2.5"/>
-    <text x="447" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">STAGING</text>
-    <text x="447" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">normalize &amp; cast</text>
-    <text x="447" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">snapshot / category tree</text>
+    <rect x="270" y="170" rx="18" ry="18" width="220" height="220" fill="#e9d5ff" stroke="#334155" stroke-width="2.5"/>
+    <text x="380" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">PRE-RAW QA</text>
+    <text x="380" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">domain + timestamp</text>
+    <text x="380" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">tx integrity + null</text>
   </g>
 
   <g>
-    <rect x="612" y="170" rx="18" ry="18" width="250" height="220" fill="#fef3c7" stroke="#334155" stroke-width="2.5"/>
-    <text x="737" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">DATA MART</text>
-    <text x="737" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">dim / fact modeling</text>
-    <text x="737" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">sessionization</text>
+    <rect x="520" y="170" rx="18" ry="18" width="220" height="220" fill="#dcfce7" stroke="#334155" stroke-width="2.5"/>
+    <text x="630" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">STAGING</text>
+    <text x="630" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">normalize &amp; cast</text>
+    <text x="630" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">snapshot / category tree</text>
   </g>
 
   <g>
-    <rect x="902" y="170" rx="18" ry="18" width="250" height="220" fill="#fee2e2" stroke="#334155" stroke-width="2.5"/>
-    <text x="1027" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">KPI</text>
-    <text x="1027" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">funnel / cohort</text>
-    <text x="1027" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">CRM targets</text>
+    <rect x="770" y="170" rx="18" ry="18" width="220" height="220" fill="#fef3c7" stroke="#334155" stroke-width="2.5"/>
+    <text x="880" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">DATA MART</text>
+    <text x="880" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">dim / fact modeling</text>
+    <text x="880" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">sessionization</text>
   </g>
 
   <g>
-    <rect x="1192" y="170" rx="18" ry="18" width="250" height="220" fill="#e9d5ff" stroke="#334155" stroke-width="2.5"/>
-    <text x="1317" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">QA</text>
-    <text x="1317" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">domain / null / integrity</text>
-    <text x="1317" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">sanity checks</text>
+    <rect x="1020" y="170" rx="18" ry="18" width="220" height="220" fill="#e9d5ff" stroke="#334155" stroke-width="2.5"/>
+    <text x="1130" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">PRE-MART QA</text>
+    <text x="1130" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">event/session recon</text>
+    <text x="1130" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">stg/fact null checks</text>
   </g>
 
   <g>
-    <rect x="1482" y="170" rx="18" ry="18" width="286" height="220" fill="#ccfbf1" stroke="#334155" stroke-width="2.5"/>
-    <text x="1625" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">EXPORT</text>
-    <text x="1625" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">CSV 3 files</text>
-    <text x="1625" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">summary TXT 1 file</text>
+    <rect x="1270" y="170" rx="18" ry="18" width="220" height="220" fill="#fee2e2" stroke="#334155" stroke-width="2.5"/>
+    <text x="1380" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">KPI</text>
+    <text x="1380" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">funnel / cohort</text>
+    <text x="1380" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">CRM targets</text>
   </g>
 
-  <line x1="282" y1="280" x2="322" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
-  <line x1="572" y1="280" x2="612" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
-  <line x1="862" y1="280" x2="902" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
-  <line x1="1152" y1="280" x2="1192" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
-  <line x1="1442" y1="280" x2="1482" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <g>
+    <rect x="1520" y="170" rx="18" ry="18" width="220" height="220" fill="#ddd6fe" stroke="#334155" stroke-width="2.5"/>
+    <text x="1630" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">POST-QA</text>
+    <text x="1630" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">kpi sanity</text>
+    <text x="1630" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">source + monotonic</text>
+  </g>
 
-  <rect x="1408" y="122" rx="10" ry="10" width="210" height="34" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.8"/>
-  <text x="1513" y="144" text-anchor="middle" dominant-baseline="middle" class="gate">QA PASS → EXPORT</text>
+  <g>
+    <rect x="1770" y="170" rx="18" ry="18" width="270" height="220" fill="#ccfbf1" stroke="#334155" stroke-width="2.5"/>
+    <text x="1905" y="245" text-anchor="middle" dominant-baseline="middle" class="boxTitle">EXPORT</text>
+    <text x="1905" y="278" text-anchor="middle" dominant-baseline="middle" class="boxLine">CSV 3 files</text>
+    <text x="1905" y="308" text-anchor="middle" dominant-baseline="middle" class="boxLine">summary TXT 1 file</text>
+  </g>
 
-  <text x="900" y="514" text-anchor="middle" class="footer">
+  <line x1="240" y1="280" x2="270" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="490" y1="280" x2="520" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="740" y1="280" x2="770" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="990" y1="280" x2="1020" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="1240" y1="280" x2="1270" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="1490" y1="280" x2="1520" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+  <line x1="1740" y1="280" x2="1770" y2="280" stroke="#64748b" stroke-width="4.5" marker-end="url(#arrow)"/>
+
+  <text x="1030" y="514" text-anchor="middle" class="footer">
     Output path: logs/reports/rr_funnel_daily_*.csv, rr_cohort_weekly_*.csv, rr_crm_targets_*.csv, rr_pipeline_summary_*.txt
   </text>
 </svg>

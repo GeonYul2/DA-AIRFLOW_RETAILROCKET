@@ -137,7 +137,11 @@ CREATE TABLE IF NOT EXISTS quality_check_runs (
   dag_run_id TEXT,
   target_date DATE NOT NULL,
   check_name TEXT NOT NULL,
+  check_phase TEXT,
   status TEXT NOT NULL,
   result_row_count INTEGER NOT NULL,
   sample_rows TEXT
 );
+
+ALTER TABLE quality_check_runs
+ADD COLUMN IF NOT EXISTS check_phase TEXT;

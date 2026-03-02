@@ -1,4 +1,6 @@
-.PHONY: up down init run-dag psql check logs run-linux fmt lint
+.PHONY: up down init run-dag run-dag-backfill psql check logs run-linux fmt lint
+
+PORTFOLIO_TARGET_DATE ?= 2015-06-16
 
 up:
 	test -f .env || cp .env.example .env
@@ -12,6 +14,9 @@ init:
 
 run-dag:
 	docker compose exec airflow-apiserver airflow dags trigger rr_funnel_daily
+
+run-dag-backfill:
+	docker compose exec airflow-apiserver airflow dags trigger rr_funnel_daily --conf '{"target_date":"$(PORTFOLIO_TARGET_DATE)"}'
 
 psql:
 	docker compose exec postgres psql -U airflow -d warehouse

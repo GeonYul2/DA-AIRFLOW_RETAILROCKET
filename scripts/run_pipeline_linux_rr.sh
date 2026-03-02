@@ -53,11 +53,24 @@ python -m scripts.load_raw.load_retailrocket \
 
 python -m scripts.run_sql_dir --dir "${SQL_ROOT}/10_staging"
 python -m scripts.run_sql_dir --dir "${SQL_ROOT}/20_mart"
+python -m scripts.run_quality_checks \
+  --target-date "${TARGET_DATE}" \
+  --dir "${SQL_ROOT}/90_quality_pre_raw" \
+  --check-phase "pre_raw" \
+  --run-id "linux_rr_${TARGET_DATE}"
+
+python -m scripts.run_quality_checks \
+  --target-date "${TARGET_DATE}" \
+  --dir "${SQL_ROOT}/91_quality_pre_mart" \
+  --check-phase "pre_mart" \
+  --run-id "linux_rr_${TARGET_DATE}"
+
 python -m scripts.run_sql_dir --dir "${SQL_ROOT}/30_kpi" --target-date "${TARGET_DATE}"
 
 python -m scripts.run_quality_checks \
   --target-date "${TARGET_DATE}" \
-  --dir "${SQL_ROOT}/90_quality" \
+  --dir "${SQL_ROOT}/95_quality_post_kpi" \
+  --check-phase "post_kpi" \
   --run-id "linux_rr_${TARGET_DATE}"
 
 python -m scripts.export_rr_funnel_csv \

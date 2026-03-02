@@ -19,3 +19,15 @@ data/raw/
 
 # OS-specific
 *:Zone.Identifier
+
+# Local notes / personal docs (do not commit)
+/AGENTS.md
+/README_SAMPLE.md
+/base.md
+/dasda.md
+/md.txt
+/블로그.txt
+/*.pdf
+
+# Local screenshot scratch
+/docs/assets/rr_funnel_daily-graph.png

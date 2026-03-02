@@ -11,8 +11,10 @@ from scripts.utils.db import get_connection, render_sql
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--target-date", required=True)
-    parser.add_argument("--dir", default="sql/90_quality")
+    parser.add_argument("--dir", default="sql/retailrocket/90_quality")
     parser.add_argument("--run-id")
+    parser.add_argument("--check-phase", default="generic")
+    parser.add_argument("--fail-fast", action="store_true")
     args = parser.parse_args()
 
     run_id = args.run_id or os.getenv("AIRFLOW_CTX_DAG_RUN_ID") or f"manual_{datetime.utcnow().isoformat()}"
@@ -38,21 +40,52 @@ def main():
                 if rows:
                     failures.append((sql_file.name, rows[:10]))
                 print(f"[CHECK] {sql_file.name}: {status}")
+                if rows and args.fail_fast:
+                    print("[CHECK] fail-fast enabled; stop running remaining quality checks")
+                    break
 
-            cur.executemany(
+            cur.execute(
                 """
-                INSERT INTO quality_check_runs (
-                    dag_run_id,
-                    target_date,
-                    check_name,
-                    status,
-                    result_row_count,
-                    sample_rows
-                )
-                VALUES (%s, %s, %s, %s, %s, %s)
-                """,
-                logs,
+                SELECT 1
+                FROM information_schema.columns
+                WHERE table_name = 'quality_check_runs'
+                  AND column_name = 'check_phase'
+                LIMIT 1
+                """
             )
+            has_check_phase = cur.fetchone() is not None
+
+            if has_check_phase:
+                cur.executemany(
+                    """
+                    INSERT INTO quality_check_runs (
+                        dag_run_id,
+                        target_date,
+                        check_name,
+                        check_phase,
+                        status,
+                        result_row_count,
+                        sample_rows
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    [(run, target, name, args.check_phase, status, count, sample) for run, target, name, status, count, sample in logs],
+                )
+            else:
+                cur.executemany(
+                    """
+                    INSERT INTO quality_check_runs (
+                        dag_run_id,
+                        target_date,
+                        check_name,
+                        status,
+                        result_row_count,
+                        sample_rows
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    logs,
+                )
         conn.commit()
 
     if failures:
