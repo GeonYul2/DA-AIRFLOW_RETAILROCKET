@@ -107,35 +107,31 @@ EDA 참고:
 | Rowcount sanity | 빈 테이블 기반 잘못된 계산 | 핵심 테이블 0건 존재 | [`004_rowcount_sanity.sql`](sql/retailrocket/90_quality/004_rowcount_sanity.sql) |
 | KPI sanity | 비정상 KPI 수치 배포 | 음수 값 또는 CVR 범위(0~1) 이탈 | [`005_kpi_sanity.sql`](sql/retailrocket/90_quality/005_kpi_sanity.sql) |
 
-#### QA 5종 선정 근거 (왜 이 5개인가)
-본 프로젝트는 로그 품질 리스크를 다음 5개 실패 모드로 분해하고, 각 모드를 최소 1개 테스트 케이스로 커버하도록 설계했습니다.
+#### QA 5종을 이렇게 설계한 이유 (실제 운영 리스크 기준)
+프로젝트를 진행하면서 “배치는 성공했는데, KPI는 틀릴 수 있는 상황”을 먼저 정리했고, 그 상황을 막기 위한 최소 검증 세트로 QA 5종을 설계했습니다.
 
-- **선정 기준 1 — 발생 가능성**: 실제 로그/배치 환경에서 자주 발생하는가
-- **선정 기준 2 — 영향도**: KPI/의사결정 왜곡으로 이어지는가
-- **선정 기준 3 — 조기 탐지성**: SQL로 즉시 PASS/FAIL 판정 가능한가
-
-| 실패 모드 | 대표 리스크 | 선택한 QA 체크 |
+| 실제로 우려한 상황 | 왜 위험한가 | 설계한 QA |
 |---|---|---|
-| 형식 오류 | 허용되지 않은 이벤트 타입 유입 | Domain check |
-| 식별/무결성 오류 | 구매 이벤트 식별자 누락 | Transaction integrity |
-| 완전성 오류 | 핵심 키 NULL로 조인/집계 왜곡 | Null checks |
-| 입수/처리 건전성 오류 | 핵심 테이블 0건(수집/적재 이상) | Rowcount sanity |
-| 지표 의미 오류 | 비즈니스적으로 불가능한 KPI 값 | KPI sanity |
+| 이벤트 타입 값이 제각각 들어옴 (`view`/`View`/오타 등) | 이벤트 분류가 깨지면 퍼널 분자/분모가 즉시 왜곡됨 | Domain check |
+| 구매 이벤트에 `transaction_id`가 비어 있음 | 구매 식별이 불가능해 구매수/매출성 지표 신뢰가 무너짐 | Transaction integrity |
+| 핵심 키(`timestamp_ms`, `visitor_id`, `item_id`, `event_ts`) 결측 발생 | 세션화/조인/집계 단계에서 누락·왜곡 전파 | Null checks |
+| STAGING/MART 핵심 테이블이 비정상적으로 0건 | 수집/적재 이상인데도 후속 집계가 진행될 수 있음 | Rowcount sanity |
+| CVR이 0~1 범위를 벗어나거나 음수 발생 | 계산식/분모 처리 오류가 운영 지표로 배포될 수 있음 | KPI sanity |
 
-즉, QA 5종은 “체크 개수”가 아니라 **주요 실패 모드를 빠짐없이 차단하기 위한 최소 세트**입니다.
+정리하면 QA 5종은 “JD에 맞춘 목록”이 아니라, **이 프로젝트에서 실제로 발생 가능하고 영향이 큰 실패 모드를 먼저 정의한 뒤 역으로 만든 테스트 케이스 세트**입니다.
 
-#### JD 관점 테스트 케이스 명세 (작성/정의)
-아래 표는 “테스트 케이스 작성 및 정의” 요구사항에 맞춘 실제 운영 명세입니다.
+#### 테스트 케이스 명세 (프로젝트 설계 의도)
+아래는 위 리스크를 코드로 고정한 운영 명세입니다.
 
-| Test Case | 목적 | 입력/상황 (Given) | PASS 기준 | FAIL 시 조치 |
-|---|---|---|---|---|
-| TC-01 Domain | 허용 이벤트 외 값 차단 | `raw_rr_events.event_type` 검사 | 결과 0행 | `run_quality_checks` 실패 처리, export 차단, 원천 이벤트 표준화 확인 후 재실행 |
-| TC-02 Integrity | 구매 식별자 누락 차단 | `event_type='transaction'` 이면서 `transaction_id IS NULL` 검사 | 결과 0행 | 해당 run 실패 + `quality_check_runs` 기록 확인, 원천/적재 로직 점검 후 backfill |
-| TC-03 Null | 핵심 키 결측 차단 | `timestamp_ms/visitor_id/item_id/event_ts` NULL 검사 | 결과 0행 | 결측 원인(수집/변환) 추적 후 재실행 |
-| TC-04 Rowcount | 빈 입력 기반 집계 차단 | `stg_rr_events/fact_rr_events/fact_rr_sessions` 건수 검사 | 모두 1건 이상 | 적재/마트 단계 상태 점검 후 재실행 |
-| TC-05 KPI Sanity | 비정상 KPI 배포 차단 | target_date의 지표 값 범위 검사 | 음수 없음 + CVR 0~1 | 계산 로직/분모 분자 정의 점검 후 재실행 |
+| Test Case | Given (검증 상황) | PASS 기준 | 실패 시 기대 동작 |
+|---|---|---|---|
+| TC-01 Domain | `raw_rr_events.event_type`에 허용값 외 값 존재 여부 | 결과 0행 | 품질 체크 실패로 DAG 중단, export 차단 |
+| TC-02 Integrity | `event_type='transaction' AND transaction_id IS NULL` 존재 여부 | 결과 0행 | 품질 체크 실패, 원천/적재 로직 점검 후 backfill |
+| TC-03 Null | 핵심 키 NULL 존재 여부 | 결과 0행 | 품질 체크 실패, 결측 원인 추적 후 재실행 |
+| TC-04 Rowcount | `stg/fact` 핵심 테이블 0건 여부 | 결과 0행(=모두 1건 이상) | 품질 체크 실패, 적재/마트 단계 상태 점검 |
+| TC-05 KPI Sanity | target_date KPI 값의 음수/범위 이탈 여부 | 결과 0행 | 품질 체크 실패, 분모·분자·계산식 점검 |
 
-현재 파이프라인에서는 FAIL 발생 시 `scripts/run_quality_checks.py`가 비정상 종료되어 DAG가 중단되고, QA 통과 전에는 CSV/TXT export가 실행되지 않습니다.
+실제로 `scripts/run_quality_checks.py`는 하나라도 FAIL이면 비정상 종료(`exit 1`)되며, 이 때문에 QA 통과 전에는 CSV/TXT export가 실행되지 않습니다.
 
 ### 6) EXPORT — 운영팀이 바로 쓸 수 있는 형태로 마감
 - **왜 필요한가**: 분석 결과를 실행 포맷으로 전달하지 않으면 후속 액션이 지연됩니다.
