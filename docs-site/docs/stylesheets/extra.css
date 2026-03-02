@@ -96,12 +96,14 @@ figcaption {
 .table-wrap table {
   min-width: 900px;
   table-layout: fixed;
+  font-size: 1.05rem;
 }
 
 .table-wrap th,
 .table-wrap td {
   word-break: keep-all;
   vertical-align: top;
+  line-height: 1.65;
 }
 
 .pass {
@@ -120,6 +122,21 @@ figcaption {
 .future-card h3 {
   margin-top: 0;
   margin-bottom: 0.55rem;
+}
+
+.dag-scroll {
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+  border-radius: 0.5rem;
+}
+
+.dag-scroll .dag-wide {
+  width: 1700px;
+  max-width: none;
+  height: auto;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: zoom-in;
 }
 
 @media screen and (min-width: 76.25em) {
