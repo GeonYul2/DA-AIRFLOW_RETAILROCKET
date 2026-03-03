@@ -1,17 +1,17 @@
 WITH raw_cnt AS (
-  SELECT COUNT(*)::BIGINT AS cnt
+  SELECT CAST(COUNT(*) AS SIGNED) AS cnt
   FROM raw_rr_events
   WHERE timestamp_ms IS NOT NULL
     AND timestamp_ms > 0
-    AND to_timestamp(timestamp_ms / 1000.0)::DATE = '{{ target_date }}'::DATE
+    AND CAST(FROM_UNIXTIME(timestamp_ms / 1000.0) AS DATE) = CAST('{{ target_date }}' AS DATE)
 ), stg_cnt AS (
-  SELECT COUNT(*)::BIGINT AS cnt
+  SELECT CAST(COUNT(*) AS SIGNED) AS cnt
   FROM stg_rr_events
-  WHERE event_date = '{{ target_date }}'::DATE
+  WHERE event_date = CAST('{{ target_date }}' AS DATE)
 ), fact_cnt AS (
-  SELECT COUNT(*)::BIGINT AS cnt
+  SELECT CAST(COUNT(*) AS SIGNED) AS cnt
   FROM fact_rr_events
-  WHERE event_date = '{{ target_date }}'::DATE
+  WHERE event_date = CAST('{{ target_date }}' AS DATE)
 )
 SELECT
   'event_count_reconciliation.raw_stg_fact_mismatch' AS issue,

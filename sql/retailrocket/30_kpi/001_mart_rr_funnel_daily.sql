@@ -1,15 +1,29 @@
 DELETE FROM mart_rr_funnel_daily
-WHERE kpi_date = '{{ target_date }}'::DATE;
+WHERE kpi_date = CAST('{{ target_date }}' AS DATE);
 
+INSERT INTO mart_rr_funnel_daily (
+  kpi_date,
+  visitors,
+  sessions,
+  views,
+  addtocarts,
+  purchases,
+  sessions_with_view,
+  sessions_with_cart,
+  sessions_with_purchase,
+  cvr_session_to_purchase,
+  cvr_view_to_cart,
+  cvr_cart_to_purchase
+)
 WITH e AS (
   SELECT *
   FROM fact_rr_events
-  WHERE event_date = '{{ target_date }}'::DATE
+  WHERE event_date = CAST('{{ target_date }}' AS DATE)
 ),
 s AS (
   SELECT *
   FROM fact_rr_sessions
-  WHERE session_date = '{{ target_date }}'::DATE
+  WHERE session_date = CAST('{{ target_date }}' AS DATE)
 ),
 agg_events AS (
   SELECT
@@ -27,22 +41,8 @@ agg_sessions AS (
     SUM(CASE WHEN has_purchase = 1 THEN 1 ELSE 0 END) AS sessions_with_purchase
   FROM s
 )
-INSERT INTO mart_rr_funnel_daily (
-  kpi_date,
-  visitors,
-  sessions,
-  views,
-  addtocarts,
-  purchases,
-  sessions_with_view,
-  sessions_with_cart,
-  sessions_with_purchase,
-  cvr_session_to_purchase,
-  cvr_view_to_cart,
-  cvr_cart_to_purchase
-)
 SELECT
-  '{{ target_date }}'::DATE AS kpi_date,
+  CAST('{{ target_date }}' AS DATE) AS kpi_date,
   ev.visitors,
   se.sessions,
   ev.views,
@@ -51,8 +51,8 @@ SELECT
   se.sessions_with_view,
   se.sessions_with_cart,
   se.sessions_with_purchase,
-  ROUND((se.sessions_with_purchase::NUMERIC / NULLIF(se.sessions, 0)), 4) AS cvr_session_to_purchase,
-  ROUND((se.sessions_with_cart::NUMERIC / NULLIF(se.sessions_with_view, 0)), 4) AS cvr_view_to_cart,
-  ROUND((se.sessions_with_purchase::NUMERIC / NULLIF(se.sessions_with_cart, 0)), 4) AS cvr_cart_to_purchase
+  ROUND((CAST(se.sessions_with_purchase AS DECIMAL(18, 4)) / NULLIF(se.sessions, 0)), 4) AS cvr_session_to_purchase,
+  ROUND((CAST(se.sessions_with_cart AS DECIMAL(18, 4)) / NULLIF(se.sessions_with_view, 0)), 4) AS cvr_view_to_cart,
+  ROUND((CAST(se.sessions_with_purchase AS DECIMAL(18, 4)) / NULLIF(se.sessions_with_cart, 0)), 4) AS cvr_cart_to_purchase
 FROM agg_events ev
 CROSS JOIN agg_sessions se;

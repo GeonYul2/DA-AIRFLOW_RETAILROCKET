@@ -10,7 +10,7 @@ SELECT
   cvr_view_to_cart,
   cvr_cart_to_purchase
 FROM mart_rr_funnel_daily
-WHERE kpi_date = '{{ target_date }}'::DATE
+WHERE kpi_date = CAST('{{ target_date }}' AS DATE)
   AND (
     visitors < 0 OR sessions < 0 OR views < 0 OR addtocarts < 0 OR purchases < 0
     OR cvr_session_to_purchase < 0 OR cvr_session_to_purchase > 1

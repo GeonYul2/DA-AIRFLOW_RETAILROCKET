@@ -1,5 +1,6 @@
 TRUNCATE TABLE stg_rr_item_snapshot;
 
+INSERT INTO stg_rr_item_snapshot (item_id, category_id, available)
 WITH ranked AS (
   SELECT
     item_id,
@@ -13,10 +14,9 @@ WITH ranked AS (
   FROM raw_rr_item_properties
   WHERE property IN ('categoryid', 'available')
 )
-INSERT INTO stg_rr_item_snapshot (item_id, category_id, available)
 SELECT
   item_id,
-  MAX(CASE WHEN property = 'categoryid' AND rn = 1 THEN NULLIF(value, '')::BIGINT END) AS category_id,
-  MAX(CASE WHEN property = 'available' AND rn = 1 THEN NULLIF(value, '')::INTEGER END) AS available
+  MAX(CASE WHEN property = 'categoryid' AND rn = 1 THEN CAST(NULLIF(value, '') AS SIGNED) END) AS category_id,
+  MAX(CASE WHEN property = 'available' AND rn = 1 THEN CAST(NULLIF(value, '') AS SIGNED) END) AS available
 FROM ranked
 GROUP BY item_id;

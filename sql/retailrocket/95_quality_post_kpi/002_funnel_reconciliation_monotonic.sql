@@ -9,34 +9,34 @@ WITH kpi AS (
     sessions_with_cart,
     sessions_with_purchase
   FROM mart_rr_funnel_daily
-  WHERE kpi_date = '{{ target_date }}'::DATE
+  WHERE kpi_date = CAST('{{ target_date }}' AS DATE)
 ), src_events AS (
   SELECT
-    SUM(CASE WHEN event_type = 'view' THEN 1 ELSE 0 END)::BIGINT AS views,
-    SUM(CASE WHEN event_type = 'addtocart' THEN 1 ELSE 0 END)::BIGINT AS addtocarts,
-    COUNT(DISTINCT CASE WHEN event_type = 'transaction' AND transaction_id IS NOT NULL THEN transaction_id END)::BIGINT AS purchases
+    CAST(SUM(CASE WHEN event_type = 'view' THEN 1 ELSE 0 END) AS SIGNED) AS views,
+    CAST(SUM(CASE WHEN event_type = 'addtocart' THEN 1 ELSE 0 END) AS SIGNED) AS addtocarts,
+    CAST(COUNT(DISTINCT CASE WHEN event_type = 'transaction' AND transaction_id IS NOT NULL THEN transaction_id END) AS SIGNED) AS purchases
   FROM fact_rr_events
-  WHERE event_date = '{{ target_date }}'::DATE
+  WHERE event_date = CAST('{{ target_date }}' AS DATE)
 ), src_sessions AS (
   SELECT
-    COUNT(*)::BIGINT AS sessions,
-    SUM(CASE WHEN has_view = 1 THEN 1 ELSE 0 END)::BIGINT AS sessions_with_view,
-    SUM(CASE WHEN has_cart = 1 THEN 1 ELSE 0 END)::BIGINT AS sessions_with_cart,
-    SUM(CASE WHEN has_purchase = 1 THEN 1 ELSE 0 END)::BIGINT AS sessions_with_purchase
+    CAST(COUNT(*) AS SIGNED) AS sessions,
+    CAST(SUM(CASE WHEN has_view = 1 THEN 1 ELSE 0 END) AS SIGNED) AS sessions_with_view,
+    CAST(SUM(CASE WHEN has_cart = 1 THEN 1 ELSE 0 END) AS SIGNED) AS sessions_with_cart,
+    CAST(SUM(CASE WHEN has_purchase = 1 THEN 1 ELSE 0 END) AS SIGNED) AS sessions_with_purchase
   FROM fact_rr_sessions
-  WHERE session_date = '{{ target_date }}'::DATE
+  WHERE session_date = CAST('{{ target_date }}' AS DATE)
 )
 SELECT
   'mart_rr_funnel_daily.missing_target_date_row' AS issue,
-  '{{ target_date }}'::DATE AS kpi_date,
-  NULL::BIGINT AS kpi_sessions,
-  NULL::BIGINT AS src_sessions,
-  NULL::BIGINT AS kpi_views,
-  NULL::BIGINT AS src_views,
-  NULL::BIGINT AS kpi_addtocarts,
-  NULL::BIGINT AS src_addtocarts,
-  NULL::BIGINT AS kpi_purchases,
-  NULL::BIGINT AS src_purchases
+  CAST('{{ target_date }}' AS DATE) AS kpi_date,
+  CAST(NULL AS SIGNED) AS kpi_sessions,
+  CAST(NULL AS SIGNED) AS src_sessions,
+  CAST(NULL AS SIGNED) AS kpi_views,
+  CAST(NULL AS SIGNED) AS src_views,
+  CAST(NULL AS SIGNED) AS kpi_addtocarts,
+  CAST(NULL AS SIGNED) AS src_addtocarts,
+  CAST(NULL AS SIGNED) AS kpi_purchases,
+  CAST(NULL AS SIGNED) AS src_purchases
 WHERE NOT EXISTS (SELECT 1 FROM kpi)
 
 UNION ALL
@@ -44,13 +44,13 @@ UNION ALL
 SELECT
   'mart_rr_funnel_daily.source_reconciliation_mismatch' AS issue,
   k.kpi_date,
-  k.sessions::BIGINT AS kpi_sessions,
+  CAST(k.sessions AS SIGNED) AS kpi_sessions,
   s.sessions AS src_sessions,
-  k.views::BIGINT AS kpi_views,
+  CAST(k.views AS SIGNED) AS kpi_views,
   e.views AS src_views,
-  k.addtocarts::BIGINT AS kpi_addtocarts,
+  CAST(k.addtocarts AS SIGNED) AS kpi_addtocarts,
   e.addtocarts AS src_addtocarts,
-  k.purchases::BIGINT AS kpi_purchases,
+  CAST(k.purchases AS SIGNED) AS kpi_purchases,
   e.purchases AS src_purchases
 FROM kpi k
 CROSS JOIN src_events e
@@ -68,13 +68,13 @@ UNION ALL
 SELECT
   'mart_rr_funnel_daily.monotonicity_violation' AS issue,
   k.kpi_date,
-  k.sessions::BIGINT AS kpi_sessions,
+  CAST(k.sessions AS SIGNED) AS kpi_sessions,
   s.sessions AS src_sessions,
-  k.views::BIGINT AS kpi_views,
+  CAST(k.views AS SIGNED) AS kpi_views,
   e.views AS src_views,
-  k.addtocarts::BIGINT AS kpi_addtocarts,
+  CAST(k.addtocarts AS SIGNED) AS kpi_addtocarts,
   e.addtocarts AS src_addtocarts,
-  k.purchases::BIGINT AS kpi_purchases,
+  CAST(k.purchases AS SIGNED) AS kpi_purchases,
   e.purchases AS src_purchases
 FROM kpi k
 CROSS JOIN src_events e

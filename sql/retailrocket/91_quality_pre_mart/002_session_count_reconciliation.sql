@@ -1,11 +1,11 @@
 WITH session_cnt AS (
-  SELECT COUNT(*)::BIGINT AS cnt
+  SELECT CAST(COUNT(*) AS SIGNED) AS cnt
   FROM fact_rr_sessions
-  WHERE session_date = '{{ target_date }}'::DATE
+  WHERE session_date = CAST('{{ target_date }}' AS DATE)
 ), event_session_cnt AS (
-  SELECT COUNT(DISTINCT session_id)::BIGINT AS cnt
+  SELECT CAST(COUNT(DISTINCT session_id) AS SIGNED) AS cnt
   FROM fact_rr_events
-  WHERE event_date = '{{ target_date }}'::DATE
+  WHERE event_date = CAST('{{ target_date }}' AS DATE)
 )
 SELECT
   'session_count_reconciliation.fact_sessions_vs_event_sessions_mismatch' AS issue,

@@ -9,10 +9,10 @@ INSERT INTO stg_rr_events (
   transaction_id
 )
 SELECT
-  to_timestamp(timestamp_ms / 1000.0)::timestamp AS event_ts,
-  to_timestamp(timestamp_ms / 1000.0)::date      AS event_date,
+  FROM_UNIXTIME(timestamp_ms / 1000.0) AS event_ts,
+  DATE(FROM_UNIXTIME(timestamp_ms / 1000.0)) AS event_date,
   visitor_id,
   item_id,
-  LOWER(TRIM(event_type))                        AS event_type,
+  LOWER(TRIM(event_type)) AS event_type,
   transaction_id
 FROM raw_rr_events;
